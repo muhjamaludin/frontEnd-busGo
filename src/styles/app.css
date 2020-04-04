@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@600&display=swap');
+.dash {
+    border-radius: 50px;
+    width: min-content;
+  }
+  .faSearch {
+    position: absolute;
+    margin-bottom: 122px;
+  }
+  .sidebar {
+    background-color: blueviolet;
+    color: white;
+    font-weight: bold;
+    border-radius: 30px;
+  }
+  hr {
+    background-color: white;
+  }
+a {
+  color: whitesmoke;
+}
+.body {
+  background-image: url(../image/user-profile-bg.jpg);
+}
+.bodyLogin {
+  background-color: #98ffd7;
+  background-repeat: no-repeat;
+  height: 80vh;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  width: auto;
+  border: 3px solid orange;
+  margin-right: 20px;;
+}
+.loginPage {
+  background-color: #fbfbfb;
+  font-family: 'Baloo Da 2', cursive;
+  height: 70vh;
+}
+.container {
+  margin-top: 25px !important;
+  margin-bottom: 25px !important;
+  margin-left: 200px !important;
+  margin-right: 200px !important;
+}
+.loginRight{
+  background-color: #00d7a8;
+  height: 70vh;
+}
+.buttonSignIn {
+  background-image: linear-gradient(#f8c333, #f5cb18,#f6d500);
+  width: 125px;
+  border-radius: 35px;
+  box-shadow: darkorange;
+  transition: .6s;
+  overflow: hidden;
+}
+.username {
+  border-top:  none !important;
+  border-right:  none !important;
+  border-bottom:  1px solid #e0e0e0 !important;
+  border-left: none !important;
+  background-color: #fbfbfb !important;
+  margin-left: 10px;
+  width: 100px;
+}
+label {
+  margin-left: 20px;
+}
