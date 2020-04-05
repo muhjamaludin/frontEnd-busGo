@@ -1,6 +1,7 @@
 const initialState = {
-  data: [],
-  isLoading: false,
+  price: [],
+  pageInfo: {},
+  isLoading: true
 }
 
 export default function Agents(state = initialState, actions) {
@@ -9,31 +10,32 @@ export default function Agents(state = initialState, actions) {
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        price: actions.payload.data,
+        pageInfo: actions.payload.pageInfo
       }
-    case 'GET_PRICE':
+    case 'GET_PRICE_BY_ID':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        price: actions.payload,
       }
     case 'EDIT_PRICE':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        price: actions.payload,
       }
     case 'ADD_PRICE':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        price: actions.payload,
       }
     case 'DELETE_PRICE':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        price: actions.payload,
       }
     default:
       return { ...state }

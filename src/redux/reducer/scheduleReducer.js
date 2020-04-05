@@ -1,5 +1,6 @@
 const initialState = {
-  data: [],
+  schedules: [],
+  pageInfo: {},
   isLoading: false,
 }
 
@@ -9,31 +10,32 @@ export default function Agents(state = initialState, actions) {
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        schedules: actions.payload.data,
+        pageInfo: actions.payload.pageInfo
       }
-    case 'GET_SCHEDULE':
+    case 'GET_SCHEDULE_BY_ID':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        schedules: actions.payload,
       }
     case 'EDIT_SCHEDULE':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        schedules: actions.payload,
       }
     case 'ADD_SCHEDULE':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        schedules: actions.payload,
       }
     case 'DELETE_SCHEDULE':
       return {
         ...state,
         isLoading: false,
-        data: actions.payload,
+        schedules: actions.payload,
       }
     default:
       return { ...state }
