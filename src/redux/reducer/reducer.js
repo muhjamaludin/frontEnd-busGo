@@ -1,10 +1,11 @@
 import { combineReducers } from 'redux'
 import agentReducer from './agentReducer'
-import { busReducer } from './busReducer'
-import { scheduleReducer } from './scheduleReducer'
-import { routeReducer } from './routeReducer'
-import { priceReducer } from './priceReducer'
+import busReducer from './busReducer'
+import scheduleReducer from './scheduleReducer'
+import routeReducer from './routeReducer'
+import priceReducer from './priceReducer'
 import { userReducer } from './userReducer'
+import reserveReducer from './reserveReducer'
 
 const rootReducer = combineReducers({
   agents: agentReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   schedule: scheduleReducer,
   route: routeReducer,
   price: priceReducer,
-  user: userReducer
+  user: userReducer,
+  reserve: reserveReducer
 })
 
 export default rootReducer
