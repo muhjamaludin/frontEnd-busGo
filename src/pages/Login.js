@@ -6,17 +6,17 @@ import {
 } from 'reactstrap'
 import '../styles/app.css'
 
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Loading from '../components/Loading'
 import config from '../utils/config'
 import { connect } from 'react-redux'
 
-import {userLoginFetch} from '../redux/actions/actions'
+import { userLoginFetch } from '../redux/actions/actions'
 
 
 class Login extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
     this.state = {
       username: '',
@@ -39,7 +39,7 @@ class Login extends Component {
     // }
     this.onLogin = async (e) => {
       e.preventDefault()
-      this.setState({isLoading:true})
+      this.setState({ isLoading: true })
       let params = {
         username: this.state.username,
         password: this.state.password
@@ -48,75 +48,85 @@ class Login extends Component {
       const connection = await axios.post(config.APP_BACKEND.concat('auth/login'), params)
       console.log(connection)
 
-      if(connection.data.success){
-        setTimeout(()=>{
-          this.setState({isLoading: false},()=>{
+      if (connection.data.success) {
+        setTimeout(() => {
+          this.setState({ isLoading: false }, () => {
             localStorage.setItem('token', connection.data.token)
             localStorage.setItem('roleId', connection.data.roleId)
             this.props.check()
             this.props.history.push('/dashboard')
           })
-        },1000)
-      }else{
-        this.setState({showModal: true, isLoading:false})
+        }, 1000)
+      } else {
+        this.setState({ showModal: true, isLoading: false })
       }
     }
     this.checkLogin = () => {
-      if(localStorage.getItem('token')){
+      if (localStorage.getItem('token')) {
         this.props.history.push('/dashboard')
       }
     }
   }
-  componentDidMount(){
+  componentDidMount() {
     this.checkLogin()
   }
   render() {
 
     return (
       <>
-      <div>
-        <Row className='bodyLogin'>
-          
-          <Container className='container' style={{border: '3px solid blue'}}>
-            <Row>
-            <Col md={5} className='loginRight'> Namaste
-            </Col>
-              <Col md={7}>
-             <Form className='loginPage' onSubmit={e=>this.onLogin(e)}>             
-            Sign Up
-              <FormGroup>
-                <Label className='text-left'>Username</Label>
-                <input type="text" className="form-control username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" onChange={(e)=> this.setUsername(e)} />
-              </FormGroup>
-              <FormGroup>
-                <Label>Password</Label>
-                <Input type='password' className="form-control username" placeholder='Password' onChange={(e)=> this.setPassword(e,)} />
-              </FormGroup>
-              <Row>
-                <Col md={12} className='text-center'>
-                  <Button type='submit' className='buttonSignIn' >Sign In</Button>
+        <div>
+          <Row className='bodyLogin'>
+
+            <Container className='container'>
+              <Row className='double'>
+                <Col md={5} className='loginRight'>
+                  <div className='wrapRight'>
+                    <p className='loginRightOne'>#First</p>
+                    <p className='loginRightTwo'>Go Inside</p>
+                    <p className='loginRightThree'>Get In for preference settings</p>
+                  </div>
+                </Col>
+                <Col md={0.5}>
+                  <div className='triangle'></div>
+                </Col>
+                <Col md={6.5}>
+                  <Form className='loginPage' onSubmit={e => this.onLogin(e)}>
+                    <span className='spanSignIn'>Sign In</span>
+                    <div className='loginInput'>
+                      <FormGroup>
+                        <Label className='text-left'></Label>
+                        <input type="text" className="form-control username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" onChange={(e) => this.setUsername(e)} />
+                      </FormGroup>
+                      <FormGroup>
+                        <Label></Label>
+                        <Input type='password' className="form-control username" placeholder='Password' onChange={(e) => this.setPassword(e)} />
+                      </FormGroup>
+                      <Row>
+                        <Col md={12} className='text-center'>
+                          <Button type='submit' className='buttonSignIn' >Sign In</Button>
+                        </Col>
+                      </Row>
+                    </div>
+                    <Row>
+                      <Col md={12} className='text-center mt-2'></Col>
+                    </Row>
+                  </Form>
                 </Col>
               </Row>
-              <Row>
-                <Col md={12} className='text-center mt-2'></Col>
-              </Row>
-            </Form> 
-            </Col>
-            </Row>
-          </Container>
-        </Row>
-      
-      <Modal isOpen={this.state.showModal}>
-        <ModalHeader>Warning</ModalHeader>
-        <ModalBody>
-          Wrong Username or Password
+            </Container>
+          </Row>
+
+          <Modal isOpen={this.state.showModal}>
+            <ModalHeader>Warning</ModalHeader>
+            <ModalBody>
+              Wrong Username or Password
         </ModalBody>
-        <ModalFooter>
-          <Button autoFocus onClick={()=>this.setState({showModal: false})} color='primary'>OK</Button>
-        </ModalFooter>
-      </Modal>
-      {this.state.isLoading && (<Loading/>)}
-      </div>
+            <ModalFooter>
+              <Button autoFocus onClick={() => this.setState({ showModal: false })} color='primary'>OK</Button>
+            </ModalFooter>
+          </Modal>
+          {this.state.isLoading && (<Loading />)}
+        </div>
       </>
     )
   }
