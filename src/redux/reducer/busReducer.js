@@ -4,7 +4,7 @@ const initialState = {
   isLoading: true,
 }
 
-export default function Agents(state = initialState, actions) {
+export default function Busses(state = initialState, actions) {
   console.log(actions)
   switch (actions.type) {
     case 'GET_BUSES':

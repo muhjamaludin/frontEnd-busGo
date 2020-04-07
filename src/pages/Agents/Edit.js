@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import config from '../../utils/config'
-import { getAgents, editAgent } from '../../redux/actions/agentActions'
+import { editAgent } from '../../redux/actions/agentActions'
 
 import qs from 'qs'
 
@@ -18,7 +18,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from 'reactstrap'
 
 class EditAgent extends Component {
@@ -30,13 +30,13 @@ class EditAgent extends Component {
       data: {},
       isLoading: false,
       showModal: false,
-      modalMessage: ''
+      modalMessage: '',
     }
   }
   componentDidMount() {
     const results = this.props.agents
     const data = results.data
-    console.log(data)
+    console.log(this.state)
     this.setState({ id: this.props.match.params.id, data })
     // const data = results.data
     // this.setState({ id: this.props.match.params.id, data })
@@ -46,7 +46,7 @@ class EditAgent extends Component {
       data[form] = e.target.value
       this.setState({ data })
     }
-    this.submitData = async e => {
+    this.submitData = async (e) => {
       e.preventDefault()
       // this.setState({isLoading: true})
       const submit = this.props.editAgent
@@ -85,7 +85,7 @@ class EditAgent extends Component {
           <>
             <Row>
               <Col md={12}>
-                <Form className='mt-2' onSubmit={e => this.submitData(e)}>
+                <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
                   <h2 className='text-dark text-center font-weight-bold'>
                     Update Agency
                   </h2>
@@ -95,7 +95,7 @@ class EditAgent extends Component {
                       type='text'
                       placeholder={this.state.data[0].id_user}
                       value={idUser}
-                      onChange={e => this.changeData(e, 'idUser')}
+                      onChange={(e) => this.changeData(e, 'idUser')}
                     />
                   </FormGroup>
                   <FormGroup>
@@ -104,7 +104,7 @@ class EditAgent extends Component {
                       type='text'
                       placeholder={this.state.data[0].name}
                       value={name}
-                      onChange={e => this.changeData(e, 'name')}
+                      onChange={(e) => this.changeData(e, 'name')}
                     />
                   </FormGroup>
                   <Button color='success'>Save</Button>
@@ -118,12 +118,13 @@ class EditAgent extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
+  console.log(state.agents.data.data)
   return {
-    agents: state.agents.data
+    agents: state.agents.data,
   }
 }
 
-const mapDispatchToProps = { getAgents }
+const mapDispatchToProps = { editAgent }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditAgent)

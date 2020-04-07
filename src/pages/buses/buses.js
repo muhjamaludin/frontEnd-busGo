@@ -58,6 +58,7 @@ class Bus extends Component {
         pageInfo,
         startFrom: this.state.startFrom + pageInfo.perPage
       })
+      console.log(this.state)
     }
     this.prevData = async () => {
       const results = await axios.get(this.state.pageInfo.prevLink)
@@ -91,7 +92,6 @@ class Bus extends Component {
         config.APP_BACKEND.concat(`bus/${this.state.selectedId}`)
       )
       if (results.data.success) {
-        console.log('test')
         const newData = await axios.get(config.APP_BACKEND.concat('bus'))
         const { data } = newData.data
         const { pageInfo } = newData.data
@@ -115,12 +115,13 @@ class Bus extends Component {
   }
 
   render() {
-    console.log(this.state.pageInfo)
+    console.log(this.state)
     return (
       <>
         <Row>
           <Sidebar />
-          <Col md={10}>
+          <Col md={1}></Col>
+          <Col md={8}>
             <Row>
               <Col md={10}>
                 <Form>

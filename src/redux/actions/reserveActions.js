@@ -10,7 +10,7 @@ export const getReserve = () => async (dispatch) => {
         const res = await axios.get(Config.APP_BACKEND.concat('reserve'))
         dispatch({
             type: 'GET_RESERVATIONS',
-            payload: res.data.data
+            payload: res.data
         })
     } catch (error) {
         console.log(error)

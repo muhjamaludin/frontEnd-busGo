@@ -1,6 +1,7 @@
 const initialState = {
   agents: [],
   isLoading: true,
+  pageInfo: {}
 }
 
 export default function Agents(state = initialState, actions) {

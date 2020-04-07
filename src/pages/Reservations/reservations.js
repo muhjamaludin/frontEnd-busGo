@@ -44,62 +44,7 @@ class Reserve extends Component {
       startFrom: 1,
     }
 
-    this.nextData = async () => {
-      const results = await axios.get(this.state.pageInfo.nextLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({
-        routes: data,
-        pageInfo,
-        startFrom: this.state.startFrom + pageInfo.perPage,
-      })
-    }
-    this.prevData = async () => {
-      const results = await axios.get(this.state.pageInfo.prevLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({
-        routes: data,
-        pageInfo,
-        startFrom: this.state.startFrom - pageInfo.perPage,
-      })
-    }
-    this.searchRoute = async e => {
-      const results = await axios.get(
-        config.APP_BACKEND.concat(`route?search[departure]=${e.target.value}`)
-      )
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ routes: data, pageInfo })
-    }
-    this.sortRoute = async () => {
-      this.setState({ sort: this.state.sort ? '' : 1 })
-      const results = await axios.get(
-        config.APP_BACKEND.concat(`route?sort[departure]=${this.state.sort}`)
-      )
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ routes: data, pageInfo })
-    }
-    this.deleteData = async () => {
-      const results = await axios.delete(
-        config.APP_BACKEND.concat(`route/${this.state.selectedId}`)
-      )
-      if (results.data.success) {
-        console.log('test')
-        const newData = await axios.get(config.APP_BACKEND.concat('route'))
-        const { data } = newData.data
-        const { pageInfo } = newData.data
-        this.setState({
-          route: data,
-          pageInfo,
-          showModal: false,
-          selectedId: 0,
-        })
-      } else {
-        console.log(results.data)
-      }
-    }
+
   }
   componentDidMount() {
     this.props.getReserve()
@@ -107,14 +52,12 @@ class Reserve extends Component {
   }
 
   render() {
-    const routes = this.props.reserve
-    const pagination = this.props.reserve
-    console.log(this.props.reserve)
+    console.log(this.props.reservations)
     return (
       <>
         <Row>
-          <Sidebar />
-          <Col md={10}>
+          <Col md={1}></Col>
+          <Col md={8}>
             <Row>
               <Col md={10}>
                 <Form>
@@ -126,19 +69,18 @@ class Reserve extends Component {
                             <i class='fas fa-search'></i>
                             <Input
                               type='search'
-                              placeholder='input your route'
+                              placeholder='input your name'
                               onChange={this.searchRoute}
                             />
                           </div>
                         </td>
                         <td className='text-right'>
-                          <Link to='/route/add'>
+                          <Link to='/reservations/add'>
                             <button
                               type='submit'
                               className='btn btn-success buttonAdd'
                             >
-                              {' '}
-                              Add Route
+                              Add reservations
                             </button>
                           </Link>
                         </td>
@@ -152,27 +94,34 @@ class Reserve extends Component {
               <thead>
                 <tr className='text-center'>
                   <th>No</th>
-                  <th onClick={this.sortRoute}>id Route</th>
-                  <th>id Bus</th>
-                  <th>id Schedule</th>
-                  <th>Options</th>
+                  <th onClick={this.sortRoute}>Username</th>
+                  <th>Bus Name</th>
+                  <th>Class Bus</th>
+                  <th>Bus Seat</th>
+                  <th>Departure</th>
+                  <th>Destination</th>
+                  <th>Time Go</th>
+                  <th>Arrive</th>
                 </tr>
               </thead>
               <tbody>
-                {routes &&
-                  routes.length &&
-                  routes &&
-                  routes.map((data, i) => (
+                {this.props.reservations.data &&
+                  this.props.reservations.data.length &&
+                  this.props.reservations.data &&
+                  this.props.reservations.data.map((data, i) => (
                     <tr className='text-center'>
                       <td>{i + 1}</td>
-                      <td>{data.id_route}</td>
-                      <td>{data.id_bus}</td>
-                      <td>{data.id_schedule}</td>
-                      <td>{data.price}</td>
+                      <td>{data.bus_name}</td>
+                      <td>{data.classBus}</td>
+                      <td>{data.departure}</td>
+                      <td>{data.destination}</td>
+                      <td>{data.departure_time}</td>
+                      <td>{data.arrive_time}</td>
+                      <td>{data.seat}</td>
                       <td>
                         <Link
                           className='buttonEdit'
-                          to={`/route/${routes[i].id}`}
+                          to={`/route/${this.props.reservations.data[i].id}`}
                         >
                           <FaEdit />
                         </Link>
@@ -181,7 +130,7 @@ class Reserve extends Component {
                           onClick={() =>
                             this.setState({
                               showModal: true,
-                              selectedId: routes[i].id,
+                              selectedId: this.props.reservations.data[i].id,
                             })
                           }
                         >
@@ -192,19 +141,19 @@ class Reserve extends Component {
                   ))}
               </tbody>
             </Table>
-            <Row>
+            {/* <Row>
               <Col md={12} className='text-right'>
-                Page {pagination.pageInfo && pagination.pageInfo.page}/
-                {pagination.pageInfo && pagination.pageInfo.totalPage} Total
-                Data {pagination.pageInfo && pagination.pageInfo.totalData}{' '}
-                Limit {pagination.pageInfo && pagination.pageInfo.perPage}
+                Page {this.props.reservations.pageInfo && this.props.reservations.pageInfo.page}/
+                {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalPage} Total
+                Data {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalData}{' '}
+                Limit {this.props.reservations.pageInfo && this.props.reservations.pageInfo.perPage}
               </Col>
             </Row>
             <Row>
               <Col md={6} className='text-center'>
                 <Button
                   disabled={
-                    pagination.pageInfo && pagination.pageInfo.prevLink
+                    this.props.reservations.pageInfo && this.props.reservations.pageInfo.prevLink
                       ? false
                       : true
                   }
@@ -217,7 +166,7 @@ class Reserve extends Component {
               <Col md={6} className='text-center'>
                 <Button
                   disabled={
-                    pagination.pageInfo && pagination.pageInfo.nextLink
+                    this.props.reservations.pageInfo && this.props.reservations.pageInfo.nextLink
                       ? false
                       : true
                   }
@@ -227,7 +176,7 @@ class Reserve extends Component {
                   &#8250;
                 </Button>
               </Col>
-            </Row>
+            </Row> */}
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete route</ModalHeader>
               <ModalBody>Are u sure want to delete route?</ModalBody>
@@ -255,7 +204,7 @@ class Reserve extends Component {
 const mapStateToProps = state => {
   console.log(state)
   return {
-    reserve: state.reserve.data
+    reservations: state.reserve.reservations
   }
 }
 

@@ -13,7 +13,7 @@ export default function Reserve(state = initialState, actions) {
                 reservations: actions.payload,
                 pageInfo: actions.pageInfo
             }
-        case 'GET_RESERVATION':
+        case 'GET_RESERVATION_BY_ID':
             return {
                 ...state,
                 isLoading: false,

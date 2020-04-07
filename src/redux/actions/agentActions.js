@@ -10,48 +10,55 @@ export const getAgents = () => async (dispatch) => {
     const res = await axios.get(Config.APP_BACKEND.concat('agents'))
     dispatch({
       type: 'GET_AGENTS',
-      payload: res.data,
+      payload: res.data
     })
   } catch (error) {
     console.log(error)
   }
 }
 
-export const getAgent = () => async (dispatch) => {
+export const getAgentById = (id) => async (dispatch) => {
   try {
     const res = await axios.get(
-      Config.APP_BACKEND.concat(`agents/${this.props.match.params.id}`)
+      Config.APP_BACKEND.concat(`agents/${id}`)
     )
     dispatch({
-      type: 'GET_AGENT',
-      payload: res,
+      type: 'GET_AGENT_BY_ID',
+      payload: res.data.data,
     })
   } catch (error) {
     console.log(error)
   }
 }
 
-export const editAgent = () => async (dispatch) => {
+export const editAgent = (id, data) => async (dispatch) => {
   try {
     const res = await axios.patch(
-      Config.APP_BACKEND.concat(`agents/${this.props.match.params.id}`),
-      qs.stringify(this.state.data)
+      Config.APP_BACKEND.concat(`agents/${id}`),
+      qs.stringify(data)
     )
+    if (res) {
+      alert('Success edit Agent')
+    } else {
+      alert('Edit Agent Failed')
+    }
     dispatch({
       type: 'EDIT_AGENT',
-      payload: res.data,
+      payload: res.data.data
     })
   } catch (error) {
     console.log(error)
   }
 }
 
-export const addAgent = () => async (dispatch) => {
+export const addAgent = (idUser, name) => async (dispatch) => {
   try {
-    const res = await axios.post(
-      Config.APP_BACKEND.concat(`agents/add`),
-      qs.stringify(this.state.data)
-    )
+    const res = await axios({
+      method: 'post',
+      url: Config.APP_BACKEND.concat('agents/add'),
+      data: { idUser: idUser, name: name },
+      headers: { 'Content-Type': 'application/json' },
+    })
     dispatch({
       type: 'ADD_AGENT',
       payload: res.data,
@@ -61,14 +68,43 @@ export const addAgent = () => async (dispatch) => {
   }
 }
 
-export const deleteAgent = () => async (dispatch) => {
+export const deleteAgent = (id) => async (dispatch) => {
   try {
     const res = await axios.delete(
-      Config.APP_BACKEND.concat(`agents/${this.props.match.params.id}`)
+      Config.APP_BACKEND.concat(`agents/${id}`)
     )
     dispatch({
       type: 'DELETE_AGENT',
       payload: res.data,
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const searchData = (name) => async dispatch => {
+  try {
+    const query = `agents?search[value]=${name}`
+    const res = await axios.get(Config.APP_BACKEND.concat(query))
+    dispatch({
+      type: 'SEARCH_DATA',
+      payload: res.data.data
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const movePage = (page) => async dispatch => {
+  try {
+    const query = `agents?page=${page}`
+    const res = await axios.get(Config.APP_BACKEND.concat(query))
+    dispatch({
+      type: 'MOVE_PAGE',
+      payload: {
+        pageInfo: res.data.pageInfo,
+        data: res.data.data
+      }
     })
   } catch (error) {
     console.log(error)

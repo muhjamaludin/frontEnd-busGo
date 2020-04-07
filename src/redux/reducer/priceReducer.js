@@ -1,41 +1,41 @@
 const initialState = {
-  price: [],
+  prices: [],
   pageInfo: {},
-  isLoading: true
+  isLoading: false
 }
 
-export default function Agents(state = initialState, actions) {
+export default function Prices(state = initialState, actions) {
   switch (actions.type) {
-    case 'GET_PRICESS':
+    case 'GET_PRICES':
       return {
         ...state,
         isLoading: false,
-        price: actions.payload.data,
+        prices: actions.payload.data,
         pageInfo: actions.payload.pageInfo
       }
     case 'GET_PRICE_BY_ID':
       return {
         ...state,
         isLoading: false,
-        price: actions.payload,
+        prices: actions.payload,
       }
     case 'EDIT_PRICE':
       return {
         ...state,
         isLoading: false,
-        price: actions.payload,
+        prices: actions.payload,
       }
     case 'ADD_PRICE':
       return {
         ...state,
         isLoading: false,
-        price: actions.payload,
+        prices: actions.payload,
       }
     case 'DELETE_PRICE':
       return {
         ...state,
         isLoading: false,
-        price: actions.payload,
+        prices: actions.payload,
       }
     default:
       return { ...state }

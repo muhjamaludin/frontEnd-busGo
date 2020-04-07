@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Yantramanav&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital@1&display=swap');
 .dash {
     border-radius: 50px;
     width: min-content;
@@ -25,28 +27,54 @@ a {
 .bodyLogin {
   background-color: #98ffd7;
   background-repeat: no-repeat;
-  height: 80vh;
-  margin-top: 20px;
-  margin-left: 20px;
-  margin-bottom: 20px;
-  width: auto;
-  border: 3px solid orange;
-  margin-right: 20px;;
+  height: 100vh;
+  width: 100%;
 }
 .loginPage {
   background-color: #fbfbfb;
-  font-family: 'Baloo Da 2', cursive;
   height: 70vh;
+  text-align: center;
 }
 .container {
-  margin-top: 25px !important;
+  margin-top: 75px !important;
   margin-bottom: 25px !important;
-  margin-left: 200px !important;
+  margin-left: 250px !important;
   margin-right: 200px !important;
+  position: relative;
 }
+
 .loginRight{
-  background-color: #00d7a8;
+  background-image: linear-gradient( #72d7b7, #18c27b);
   height: 70vh;
+  z-index: 999;
+}
+.wrapRight {
+  margin-top: 90px;
+}
+.loginRight .loginRightOne {
+ color: #fffafc;
+ font-size: 25pt;
+ font-weight: bolder;
+}
+.loginRightTwo {
+ color: #fffbff;
+ font-weight: bolder;
+ font-size: 36pt;
+}
+.loginRightThree {
+  color: #caf7e3;
+  font-weight: bolder;
+  font-size: 15pt;
+}
+.triangle {
+  width: 60px;
+  height: 60px;
+  background-color: #3c3b37;
+  position: absolute;
+  left: 38%;
+  top: 37%;
+  border-radius: 0 10px 0 0;
+  transform: rotate(45deg);
 }
 .buttonSignIn {
   background-image: linear-gradient(#f8c333, #f5cb18,#f6d500);
@@ -62,9 +90,21 @@ a {
   border-bottom:  1px solid #e0e0e0 !important;
   border-left: none !important;
   background-color: #fbfbfb !important;
-  margin-left: 10px;
-  width: 100px;
+  width: 300px;
+  margin-left: -5px;
+  font-family: 'Yantramanav', sans-serif;
+  font-weight: bold;
+  text-align: left;
 }
 label {
   margin-left: 20px;
+}
+.loginInput {
+  margin-top: 50px;
+  margin-left: 80px;
+}
+.spanSignIn {
+  font-size: 3em;
+  font-family: 'Source Code Pro', monospace;
+  padding: 100px;
 }
