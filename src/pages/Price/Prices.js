@@ -85,7 +85,7 @@ class Price extends Component {
         <Row>
           <Sidebar />
           <Col md={1}></Col>
-          <Col md={8}>
+          <Col md={9} className="mt-4" >
             <Row>
               <Col md={10}>
                 <Form>
@@ -108,7 +108,7 @@ class Price extends Component {
               </Col>
             </Row>
             <Table>
-              <thead>
+              <thead className="thead-dark">
                 <tr className='text-center'>
                   <th>No</th>
                   <th>Bus Name</th>
@@ -126,7 +126,7 @@ class Price extends Component {
                   <tr className='text-center' >
                     <td>{(this.state.startFrom + i)}</td>
                     <td>{v.bus_name}</td>
-                    <td>{v.classBus}</td>
+                    <td>{v.class_bus}</td>
                     <td>{v.departure}</td>
                     <td>{v.destination}</td>
                     <td>{v.departure_time}</td>
@@ -145,16 +145,14 @@ class Price extends Component {
               </tbody>
             </Table>
             <Row>
-              <Col md={12} className='text-right'>
-                Page {this.props.prices.pageInfo.page}/{this.props.prices.pageInfo.totalPage} Total Data {this.props.prices.pageInfo.totalData} Limit {this.props.prices.pageInfo.perPage}
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6} className='text-center'>
+            <Col md={3} className='text-center'>
                 <Button disabled={this.props.prices.pageInfo.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
               </Col>
               <Col md={6} className='text-center'>
                 <Button disabled={this.props.prices.pageInfo.nextLink ? false : true} onClick={this.nextData} className='next'>&#8250;</Button>
+              </Col>
+              <Col md={3} className='text-right'>
+                Page {this.props.prices.pageInfo.page}/{this.props.prices.pageInfo.totalPage} Total Data {this.props.prices.pageInfo.totalData} Limit {this.props.prices.pageInfo.perPage}
               </Col>
             </Row>
             <Modal isOpen={this.state.showModal}>
@@ -173,7 +171,7 @@ class Price extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state)
+  console.log('harga', state.price)
   return {
     prices: state.price
   }

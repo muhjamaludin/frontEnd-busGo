@@ -73,9 +73,9 @@ class App extends React.Component {
             <Route path='/schedule' exact render={(props) => <Schedules {...props} />} />
             <Route path='/schedule/add' exact render={(props) => <CreateSchedules {...props} />} />
             <Route path='/schedule/:id' exact render={(props) => <EditSchedules {...props} />} />
-            <Route path='/transaction' exact render={(props) => <Prices {...props} />} />
-            <Route path='/transaction/add' exact render={(props) => <PostPrice {...props} />} />
-            <Route path='/transaction/:id' exact render={(props) => <EditPrices {...props} />} />
+            <Route path='/price' exact render={(props) => <Prices {...props} />} />
+            <Route path='/price/add' exact render={(props) => <PostPrice {...props} />} />
+            <Route path='/price/:id' exact render={(props) => <EditPrices {...props} />} />
             <Route path='/reserve' exact render={(props) => <Reservations {...props} />} />
             <Route path="*" exact render={(props) => <NotFound {...props} />} />
           </Switch>

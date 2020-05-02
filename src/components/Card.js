@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
 import { Col, Row, Card as CardData } from 'reactstrap'
-import axios from 'axios'
-import config from '../utils/config'
+
+import {getBusses} from '../redux/actions/busActions'
+import {getRoutes} from '../redux/actions/routeActions'
+import {getSchedules} from '../redux/actions/scheduleActions'
+import {getAgents} from '../redux/actions/agentActions'
+
+import {connect} from 'react-redux'
 
 import '../styles/card.css'
 import { MdSchedule } from 'react-icons/md'
@@ -11,54 +16,39 @@ class Card extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      totalBus: '',
-      totalRoute: '',
       totalSchedule: '',
       totalAgents: '',
-    }
-    this.checkData = () => {
-      this.props.checkData()
     }
   }
 
   async componentDidMount() {
-    const totalDataBus = await axios.get(config.APP_BACKEND.concat('bus'))
-    const totalBus = ''
-    this.setState({ totalBus: totalDataBus.data.pageInfo.totalData })
-    const totalDataRoute = await axios.get(config.APP_BACKEND.concat('route'))
-    const totalRoute = ''
-    this.setState({ totalRoute: totalDataRoute.data.pageInfo.totalData })
-    const totalDataSchedule = await axios.get(
-      config.APP_BACKEND.concat('schedule')
-    )
-    const totalSchedule = ''
-    this.setState({ totalSchedule: totalDataSchedule.data.pageInfo.totalData })
-    const totalDataAgents = await axios.get(config.APP_BACKEND.concat('agents'))
-    const totalAgents = ''
-    this.setState({ totalAgents: totalDataSchedule.data.pageInfo.totalData })
+    this.props.getBusses()
+    this.props.getRoutes()
+    this.props.getSchedules()
+    this.props.getAgents()
   }
 
   render() {
     return (
-      <Row className='mt-2 rowCard'>
+      <Row className='rowCard'>
         <Col md={3}>
-          <CardData className='bg-light bus'>
-            <FaBus /> {this.state.totalBus} buses
+          <CardData className='sizeCard bus'>
+            <FaBus className='icon' /> {(this.props.bus.busses).length} buses
           </CardData>
         </Col>
         <Col md={3}>
-          <CardData className='bg-light route'>
-            <FaRoute /> {this.state.totalRoute} Routes
+          <CardData className='sizeCard route'>
+            <FaRoute className='icon' /> {(this.props.route).length} Routes
           </CardData>
         </Col>
         <Col md={3}>
-          <CardData className='agent'>
-            <FaUserTie /> {this.state.totalAgents} Agents
+          <CardData className='sizeCard agent'>
+            <FaUserTie className='icon' /> {(this.props.agen).length} Agents
           </CardData>
         </Col>
         <Col md={3}>
-          <CardData className='schedule'>
-            <MdSchedule /> {this.state.totalSchedule} Schedules
+          <CardData className='sizeCard schedule'>
+            <MdSchedule className='icon' /> {(this.props.schedule).length} Schedules
           </CardData>
         </Col>
       </Row>
@@ -66,4 +56,13 @@ class Card extends Component {
   }
 }
 
-export default Card
+const mapStateToProps = state => {
+  return {
+    bus: state.bus,
+    route: state.route.routes,
+    schedule: state.schedule.schedules,
+    agen: state.agents.agents
+  }
+}
+
+export default connect(mapStateToProps, {getBusses, getRoutes, getSchedules, getAgents})(Card)

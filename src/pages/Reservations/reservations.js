@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { MdDeleteForever, MdEdit } from 'react-icons/md'
 import { FaEdit } from 'react-icons/fa'
+import AddButton from '../../components/Button'
 
 class Reserve extends Component {
   constructor(props) {
@@ -43,8 +44,6 @@ class Reserve extends Component {
       selectedId: 0,
       startFrom: 1,
     }
-
-
   }
   componentDidMount() {
     this.props.getReserve()
@@ -76,12 +75,7 @@ class Reserve extends Component {
                         </td>
                         <td className='text-right'>
                           <Link to='/reservations/add'>
-                            <button
-                              type='submit'
-                              className='btn btn-success buttonAdd'
-                            >
-                              Add reservations
-                            </button>
+                            <AddButton name={'Reservations'} />
                           </Link>
                         </td>
                       </tr>
@@ -204,7 +198,7 @@ class Reserve extends Component {
 const mapStateToProps = state => {
   console.log(state)
   return {
-    reservations: state.reserve.reservations
+    reservations: state.reserve.reservations,
   }
 }
 

@@ -1,7 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { checkData } from '../redux/actions/busGo'
-import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Card from '../components/Card'
 import Reservations from './Reservations/reservations'
@@ -30,12 +27,13 @@ class Dashboard extends Component {
   render() {
     return (
       <div>
-        <Row className='mt-2'>
+        <Row>
           <Sidebar />
-          <Col md={10}>
+          <Col md={11}>
             <Card />
             <Row className='mt-4' style={{ height: '400px' }}>
-              <Col md={12}><Reservations />
+              <Col md={12}>
+                <Reservations />
               </Col>
             </Row>
           </Col>
@@ -45,12 +43,4 @@ class Dashboard extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    busGo: state.busGo,
-  }
-}
-
-const mapDispatchToProps = { checkData }
-
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)
+export default Dashboard

@@ -122,7 +122,6 @@ class Agent extends Component {
     // };
   }
   componentDidMount() {
-    console.log('MOUNTED')
     this.props.getAgents()
   }
 
@@ -133,7 +132,7 @@ class Agent extends Component {
         <Row>
           <Sidebar />
           <Col md={1}></Col>
-          <Col md={8} className='mt-4'>
+          <Col md={9} className='mt-4'>
             <Row>
               <Col md={10}>
                 {this.props.agents && this.props.agents.length !== 0 ? (
@@ -176,7 +175,7 @@ class Agent extends Component {
               <thead className='thead-dark'>
                 <tr className='text-center'>
                   <th>No</th>
-                  <th>id User</th>
+                  <th>Username</th>
                   <th onClick={this.sortAgent}>Agency Name</th>
                   <th>Options</th>
                 </tr>
@@ -186,7 +185,7 @@ class Agent extends Component {
                   this.props.agents.map((v, i) => (
                     <tr className='text-center'>
                       <td>{1 + i}</td>
-                      <td>{v.id_user}</td>
+                      <td>{v.username}</td>
                       <td>{v.name}</td>
                       <td>
                         <Link
@@ -210,9 +209,31 @@ class Agent extends Component {
                     </tr>
                   ))}
               </tbody>
-            </Table>
+            </Table>  
             <Row>
-              <Col md={12} className='text-right'>
+            <Col md={3} className='text-center' style={{height: '10%'}}>
+                <Button
+                  disabled={
+                    this.props && this.props.pageInfo.prevLink ? false : true
+                  }
+                  onClick={this.prevData}
+                  className='previous'
+                >
+                  &#8249;
+                </Button>
+              </Col>
+              <Col md={6} className='text-center'>
+                <Button
+                  disabled={
+                    this.props && this.props.pageInfo.nextLink ? false : true
+                  }
+                  onClick={this.nextData}
+                  className='next'
+                >
+                  &#8250;
+                </Button>
+              </Col>
+              <Col md={3} className='text-right'>
                 Page {this.props.pageInfo && this.props.pageInfo.page}/
                 {this.props.pageInfo && this.props.pageInfo.totalPage}{' '} Total
                 Data {this.props.pageInfo && this.props.pageInfo.totalData}
@@ -220,12 +241,12 @@ class Agent extends Component {
               </Col>
             </Row>
             <Row>
-              <Col md={12} className='text-center'>
+              {/* <Col md={12} className='text-center'>
                 <Pagination totalRecords={this.props.pageInfo && this.props.pageInfo.totalData}
                   pageLimit={this.props.pageInfo && this.props.pageInfo.perPage}
                   pageNeighbours={0}
                   onPageChanged={this.onPageChanged} />
-              </Col>
+              </Col> */}
             </Row>
             <Modal isOpen={this.props.showModal}>
               <ModalHeader>Delete Agent</ModalHeader>
@@ -252,7 +273,6 @@ class Agent extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state)
   return {
     agents: state.agents.agents,
     pageInfo: state.agents.pageInfo

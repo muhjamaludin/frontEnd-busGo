@@ -20,6 +20,7 @@ import {
   ModalFooter,
 } from 'reactstrap'
 
+import '../../styles/search.css'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { FiEdit, FiSearch } from 'react-icons/fi'
@@ -114,7 +115,7 @@ class Schedule extends Component {
         <Row>
           <Sidebar />
           <Col md={1}></Col>
-          <Col md={8}>
+          <Col md={9} className="mt-4">
             <Row>
               <Col md={10}>
                 <Form>
@@ -148,7 +149,7 @@ class Schedule extends Component {
                 </Form>
               </Col>
             </Row>
-            <Table>
+            <Table style={{textAlign: 'center'}}>
               <thead className='thead-dark'>
                 <tr>
                   <th>No</th>
@@ -190,15 +191,7 @@ class Schedule extends Component {
               </tbody>
             </Table>
             <Row>
-              <Col md={12} className='text-right'>
-                Page {this.props.pageInfo && this.props.pageInfo.page}/
-                {this.props.pageInfo && this.props.pageInfo.totalPage} Total
-                Data {this.props && this.props.pageInfo.totalData} Limit{' '}
-                {this.props && this.props.pageInfo.perPage}
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6} className='text-center'>
+            <Col md={3} className='text-center' style={{height: '10%'}}>
                 <Button
                   disabled={
                     this.props && this.props.pageInfo.prevLink ? false : true
@@ -220,7 +213,14 @@ class Schedule extends Component {
                   &#8250;
                 </Button>
               </Col>
+              <Col md={3} className='text-right'>
+                Page {this.props.pageInfo && this.props.pageInfo.page}/
+                {this.props.pageInfo && this.props.pageInfo.totalPage} Total
+                Data {this.props && this.props.pageInfo.totalData} Limit{' '}
+                {this.props && this.props.pageInfo.perPage}
+              </Col>
             </Row>
+            
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete Schedule</ModalHeader>
               <ModalBody>Are u sure want to delete schedule?</ModalBody>

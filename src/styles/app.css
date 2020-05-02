@@ -2,22 +2,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Yantramanav&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital@1&display=swap');
 .dash {
-    border-radius: 50px;
-    width: min-content;
-  }
-  .faSearch {
-    position: absolute;
-    margin-bottom: 122px;
-  }
-  .sidebar {
-    background-color: blueviolet;
-    color: white;
-    font-weight: bold;
-    border-radius: 30px;
-  }
-  hr {
-    background-color: white;
-  }
+  border-radius: 50px;
+  width: min-content;
+}
+.faSearch {
+  position: absolute;
+  margin-bottom: 122px;
+}
+.sidebar {
+  background-color: #053354;
+  color: white;
+  font-weight: bold;
+  font-size: 10pt;
+}
+.sidebar ul {
+  text-align: center;
+}
+.sidebar ul li {
+  padding: 5px;
+}
+hr {
+  background-color: white;
+}
 a {
   color: whitesmoke;
 }
@@ -27,8 +33,8 @@ a {
 .bodyLogin {
   background-color: #98ffd7;
   background-repeat: no-repeat;
-  height: 100vh;
-  width: 100%;
+  height: 88vh;
+  width: 101%;
 }
 .loginPage {
   background-color: #fbfbfb;
@@ -36,15 +42,14 @@ a {
   text-align: center;
 }
 .container {
-  margin-top: 75px !important;
-  margin-bottom: 25px !important;
-  margin-left: 250px !important;
-  margin-right: 200px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
-.loginRight{
-  background-image: linear-gradient( #72d7b7, #18c27b);
+.loginRight {
+  background-image: linear-gradient(#72d7b7, #18c27b);
   height: 70vh;
   z-index: 999;
 }
@@ -52,14 +57,14 @@ a {
   margin-top: 90px;
 }
 .loginRight .loginRightOne {
- color: #fffafc;
- font-size: 25pt;
- font-weight: bolder;
+  color: #fffafc;
+  font-size: 25pt;
+  font-weight: bolder;
 }
 .loginRightTwo {
- color: #fffbff;
- font-weight: bolder;
- font-size: 36pt;
+  color: #fffbff;
+  font-weight: bolder;
+  font-size: 36pt;
 }
 .loginRightThree {
   color: #caf7e3;
@@ -71,23 +76,23 @@ a {
   height: 60px;
   background-color: #3c3b37;
   position: absolute;
-  left: 38%;
-  top: 37%;
+  left: 42%;
+  top: 42%;
   border-radius: 0 10px 0 0;
   transform: rotate(45deg);
 }
 .buttonSignIn {
-  background-image: linear-gradient(#f8c333, #f5cb18,#f6d500);
+  background-image: linear-gradient(#f8c333, #f5cb18, #f6d500);
   width: 125px;
   border-radius: 35px;
   box-shadow: darkorange;
-  transition: .6s;
+  transition: 0.6s;
   overflow: hidden;
 }
 .username {
-  border-top:  none !important;
-  border-right:  none !important;
-  border-bottom:  1px solid #e0e0e0 !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: 1px solid #e0e0e0 !important;
   border-left: none !important;
   background-color: #fbfbfb !important;
   width: 300px;

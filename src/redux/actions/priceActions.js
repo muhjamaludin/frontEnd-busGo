@@ -7,7 +7,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(
 
 export const getPrices = () => async (dispatch) => {
   try {
-    const res = await axios.get(Config.APP_BACKEND.concat('transaction'))
+    const res = await axios.get(Config.APP_BACKEND.concat('price'))
     dispatch({
       type: 'GET_PRICES',
       payload: res.data

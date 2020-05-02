@@ -112,7 +112,7 @@ class Route extends Component {
         <Row>
           <Sidebar />
           <Col md={1}></Col>
-          <Col md={8}>
+          <Col md={9} className='mt-4' >
             <Row>
               <Col md={10}>
                 <Form>
@@ -169,7 +169,7 @@ class Route extends Component {
                           className='buttonEdit'
                           to={`/route/${this.props.routes[i].id}`}
                         >
-                          <FaEdit />
+                          <FaEdit size={24} />
                         </Link>
                         <button
                           className='buttonDelete'
@@ -180,7 +180,7 @@ class Route extends Component {
                             })
                           }
                         >
-                          <MdDeleteForever />
+                          <MdDeleteForever size={24} />
                         </button>
                       </td>
                     </tr>
@@ -188,15 +188,7 @@ class Route extends Component {
               </tbody>
             </Table>
             <Row>
-              <Col md={12} className='text-right'>
-                Page {this.props.pageInfo && this.props.pageInfo.page}/
-                {this.props.pageInfo && this.props.pageInfo.totalPage} Total
-                Data {this.props.pageInfo && this.props.pageInfo.totalData}{' '}
-                Limit {this.props.pageInfo && this.props.pageInfo.perPage}
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6} className='text-center'>
+            <Col md={3} className='text-center'>
                 <Button
                   disabled={
                     this.props.pageInfo && this.props.pageInfo.prevLink
@@ -221,6 +213,12 @@ class Route extends Component {
                 >
                   &#8250;
                 </Button>
+              </Col>
+              <Col md={3} className='text-right'>
+                Page {this.props.pageInfo && this.props.pageInfo.page}/
+                {this.props.pageInfo && this.props.pageInfo.totalPage} Total
+                Data {this.props.pageInfo && this.props.pageInfo.totalData}{' '}
+                Limit {this.props.pageInfo && this.props.pageInfo.perPage}
               </Col>
             </Row>
             <Modal isOpen={this.state.showModal}>

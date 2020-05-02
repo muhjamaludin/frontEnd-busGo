@@ -73,11 +73,13 @@ class PostAgent extends Component {
 
           <>
             <Row>
-              <Col md={12}>
-                <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
+              <Col md={4} />
+              <Col md={5} className="mt-4">
+                <Form className='mt-4' onSubmit={(e) => this.submitData(e)}>
                   <h2 className='text-dark text-center font-weight-bold'>
                     New Agency
                   </h2>
+                  <div style={{marginTop: '30px'}}>
                   <FormGroup>
                     <Label>id User</Label>
                     <Input
@@ -97,6 +99,7 @@ class PostAgent extends Component {
                     />
                   </FormGroup>
                   <Button color='success'>Save</Button>
+                  </div>
                 </Form>
               </Col>
             </Row>

@@ -112,7 +112,7 @@ export const movePage = (page) => async dispatch => {
         data: res.data.data
       }
     })
-  } catch {
+  } catch(error) {
     console.log(error)
   }
 }

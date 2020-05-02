@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import config from '../../utils/config'
 import axios from 'axios'
 import Sidebar from '../../components/Sidebar'
+import {getUsers} from '../../redux/actions/userActions'
+import {connect} from 'react-redux'
 
 import {
   Table, Container, Button,
@@ -9,7 +11,8 @@ import {
   Label, Input, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
 import { MdDeleteForever } from 'react-icons/md'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaEye } from 'react-icons/fa'
+import '../../styles/search.css'
 
 import { Link } from 'react-router-dom'
 
@@ -76,15 +79,16 @@ class Users extends Component {
     const { data } = results.data
     const { pageInfo } = results.data
     this.setState({ users: data, pageInfo })
+    this.props.getUsers()
   }
 
   render() {
     return (
       <>
         <Row>
-          {/* <Sidebar /> */}
+          <Sidebar />
           <Col md={1}></Col>
-          <Col md={8}>
+          <Col md={9} className="mt-4" >
             <Form style={{ width: '70%' }}>
               <FormGroup>
                 <table style={{ width: '100%' }}>
@@ -95,40 +99,42 @@ class Users extends Component {
                         <Input type='search' placeholder='input your name' onChange={this.searchUser} />
                       </div>
                     </td>
-                    <td className='text-right'>
+                    {/* <td className='text-right'>
                       <Link to='/agents/add'><button type='submit' className='btn btn-success buttonAdd'> Add User</button></Link>
-                    </td>
+                    </td> */}
                   </tr>
                 </table>
               </FormGroup>
             </Form>
-          </Col>
-        </Row>
         <Table>
-          <thead>
+          <thead className="thead-dark">
             <tr>
               <th>No</th>
-              <th onClick={this.sortUser}>Username</th>
-              <th>Is Active</th>
-              <th>Is Verified</th>
+              <th>Username</th>
+              <th>Fullname</th>
+              <th>Identity</th>
+              <th>Phone</th>
+              <th>Role id</th>
               <th>Options</th>
             </tr>
           </thead>
           <tbody>
-            {this.state.users.length && this.state.users.map((v, i) => (
-              <tr key={this.state.users[i].id.toString()}>
-                <td>{(this.state.startFrom + i)}</td>
-                <td>{this.state.users[i].username}</td>
-                <td>{this.state.users[i].is_active}</td>
-                <td>{this.state.users[i].is_verified}</td>
+            {this.props.user.length && this.props.user.map((v, i) => (
+              <tr key={this.props.user[i].id.toString()}>
+                <td>{1 + i}</td>
+                <td>{this.props.user[i].username}</td>
+                <td>{this.props.user[i].fullname}</td>
+                <td>{this.props.user[i].identity}</td>
+                <td> {this.props.user[i].phone} </td>
+                <td> {this.props.user[i].role_id} </td>
                 <td>
-                  <Link style={{ marginRight: '40px', color: 'black' }} to={`/user/userdetail/${this.state.users[i].id}`}>
-                    <i class="far fa-eye"></i>
+                  <Link style={{ marginRight: '40px', color: 'black' }} to={`/user/userdetail/${this.props.user[i].id}`}>
+                    <FaEye />
                   </Link>
-                  <Link to={`/user/edit/${this.state.users[i].id}`}>
-                    <FaEdit />
+                  <Link to={`/user/edit/${this.props.user[i].id}`}>
+                    <FaEdit color={'blue'} />
                   </Link>
-                  <Button className='buttonDelete' onClick={() => this.setState({ showModal: true, selectedId: this.state.users[i].id })}>
+                  <Button className='buttonDelete' onClick={() => this.setState({ showModal: true, selectedId: this.props.user[i].id })}>
                     <MdDeleteForever />
                   </Button>
                 </td>
@@ -137,29 +143,36 @@ class Users extends Component {
           </tbody>
         </Table>
         <Row>
-          <Col md={12} className='text-right'>
-            Page {this.state.pageInfo.page}/{this.state.pageInfo.totalPage} Total Data {this.state.pageInfo.totalData} Limit {this.state.pageInfo.perPage}
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6} className='text-center'>
-            <Button disabled={this.state.pageInfo.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
+        <Col md={3} className='text-center'>
+            <Button disabled={this.props.page.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
           </Col>
           <Col md={6} className='text-center'>
-            <Button disabled={this.state.pageInfo.nextLink ? false : true} onClick={this.nextData} className='next'>&#8250;</Button>
+            <Button disabled={this.props.page.nextLink ? false : true} onClick={this.nextData} className='next'>&#8250;</Button>
+          </Col>
+          <Col md={3} className='text-right'>
+            Page {this.props.page.page}/{this.props.page.totalPage} Total Data {this.props.page.totalData} Limit {this.props.page.perPage}
           </Col>
         </Row>
-        <Modal isOpen={this.state.showModal}>
+        {/* <Modal isOpen={this.state.showModal}>
           <ModalHeader>Delete User</ModalHeader>
           <ModalBody>Are u sure want to delete user?</ModalBody>
           <ModalFooter>
             <Button color='success' onClick={this.deleteData}>OK</Button>
             <Button color='danger' onClick={() => this.setState({ showModal: false, selectedId: 0 })}>Cancel</Button>
           </ModalFooter>
-        </Modal>
+        </Modal> */}
+        </Col>
+        </Row>
       </>
     )
   }
 }
 
-export default Users
+const mapStateToProps = state => {
+  return {
+    user: state.user.users,
+    page: state.user.pageInfo
+  }
+}
+
+export default connect(mapStateToProps, {getUsers})(Users)

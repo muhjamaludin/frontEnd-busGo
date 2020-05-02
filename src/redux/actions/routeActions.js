@@ -10,7 +10,7 @@ export const getRoutes = () => async (dispatch) => {
     const res = await axios.get(Config.APP_BACKEND.concat('route'))
     dispatch({
       type: 'GET_ROUTES',
-      payload: res.data,
+      payload: res.data
     })
   } catch (error) {
     console.log(error)
