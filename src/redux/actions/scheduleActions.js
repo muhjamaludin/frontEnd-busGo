@@ -15,3 +15,15 @@ export const getSchedules = () => async (dispatch) => {
     console.log(error)
   }
 }
+
+export const addSchedules = (data) => async (dispatch) => {
+  try {
+    const res = await axios.post(Config.APP_BACKEND.concat('schedule/add'), data)
+    dispatch({
+      type: 'ADD_SCHEDULE',
+      payload: res.data
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}

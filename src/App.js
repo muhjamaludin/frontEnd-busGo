@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 /* Custom Component */
 import Navbar from './components/Navbar'
 import NavbarMenu from './components/NavbarMenu'
-import SidebarNone from './components/SidebarNone'
+import Sidebar from './components/Sidebar'
 
 /* Pages */
 import Home from './pages/Home'
@@ -55,6 +55,7 @@ class App extends React.Component {
 
           {this.state.isLogin ?
             <Navbar isLogin={this.state.isLogin} check={() => this.checkLogin()} />
+            
             : <NavbarMenu isLogin={this.state.isLogin} check={() => this.checkLogin()} />}
 
           <Switch>

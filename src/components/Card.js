@@ -33,22 +33,22 @@ class Card extends Component {
       <Row className='rowCard'>
         <Col md={3}>
           <CardData className='sizeCard bus'>
-            <FaBus className='icon' /> {(this.props.bus.busses).length} buses
+            <FaBus className='icon' /> {this.props.bus.totalData} buses
           </CardData>
         </Col>
         <Col md={3}>
           <CardData className='sizeCard route'>
-            <FaRoute className='icon' /> {(this.props.route).length} Routes
+            <FaRoute className='icon' /> {this.props.route.totalData} Routes
           </CardData>
         </Col>
         <Col md={3}>
           <CardData className='sizeCard agent'>
-            <FaUserTie className='icon' /> {(this.props.agen).length} Agents
+            <FaUserTie className='icon' /> {this.props.agen.totalData} Agents
           </CardData>
         </Col>
         <Col md={3}>
           <CardData className='sizeCard schedule'>
-            <MdSchedule className='icon' /> {(this.props.schedule).length} Schedules
+            <MdSchedule className='icon' /> {this.props.schedule.totalData} Schedules
           </CardData>
         </Col>
       </Row>
@@ -58,10 +58,10 @@ class Card extends Component {
 
 const mapStateToProps = state => {
   return {
-    bus: state.bus,
-    route: state.route.routes,
-    schedule: state.schedule.schedules,
-    agen: state.agents.agents
+    bus: state.bus.pageInfo,
+    route: state.route.pageInfo,
+    schedule: state.schedule.pageInfo,
+    agen: state.agents.pageInfo
   }
 }
 

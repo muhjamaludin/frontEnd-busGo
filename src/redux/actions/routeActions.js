@@ -16,3 +16,15 @@ export const getRoutes = () => async (dispatch) => {
     console.log(error)
   }
 }
+
+export const createRoutes = (data) => async dispatch => {
+  try {
+    const res = await axios.post(Config.APP_BACKEND.concat('route/add'))
+    dispatch({
+      type: 'ADD_ROUTES',
+      payload: res.data
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}

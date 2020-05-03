@@ -1,14 +1,12 @@
 import React, {Component} from 'react'
-import axios from 'axios'
-import config from '../../utils/config'
-
-import qs from 'qs'
-
 import {
   Container, Form, FormGroup,
   Row, Col, Input, Label,
   Button, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
+import {addSchedules} from '../../redux/actions/scheduleActions'
+import {connect} from 'react-redux'
+import Sidebar from '../../components/Sidebar'
 
 class CreateSchedule extends Component{
   constructor(props){
@@ -20,41 +18,30 @@ class CreateSchedule extends Component{
       showModal: false,
       modalMessage: ''
     }
-    this.submitData = async (e)=>{
-        e.preventDefault()
-        // this.setState({isLoading: true})
-        const submit = await axios.patch(config.APP_BACKEND.concat(`schedule/add`),qs.stringify(this.state.data))
-        console.log(submit.data)
-        if(submit.data.success){
-          this.setState({isLoading: false})
-          this.props.history.push('/schedule')
-        }else{
-          this.setState({modalMessage: submit.data.msg})
-        }
+    this.submitData = async (e) => {
+      e.preventDefault()
+      // this.setState({isLoading: true})
+      console.log(this.state)
+      const data = {
+        departure: this.state.timeGo,
+        arrive: this.state.arrive
       }
+      this.props.addSchedules(data)
+      this.props.history.push('/schedule')
+    }
       this.dismissModal = () => {
         this.setState({showModal: false})
         this.props.history.push('/schedule')
       }
   }
-  async componentDidMount(){
-    const results = await axios.get(config.APP_BACKEND.concat(`schedule/add`))
-    const {data} = results.data
-    console.log(data)
-    this.setState({id:this.props.match.params.id, data})
-    this.changeData = (e, form) => {
-      const {data} = this.state
-      data[form] = e.target.value 
-      this.setState({data})
-    }
-}
-
     
   render(){
     return(
         <>
           <Row>
-            <Col md={12}>
+            <Sidebar />
+            <Col md={3}></Col>
+            <Col md={5}>
               <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
                 <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
                 <FormGroup>
@@ -74,7 +61,7 @@ class CreateSchedule extends Component{
                 <Button  color='success'>Save</Button>
               </Form>
             </Col>
-          </Row>
+            </Row>
           <Modal isOpen={this.state.showModal}>
             <ModalHeader>Alert</ModalHeader>
             <ModalBody>
@@ -89,4 +76,4 @@ class CreateSchedule extends Component{
   }
 }
 
-export default CreateSchedule
+export default connect(null, {addSchedules})(CreateSchedule)
