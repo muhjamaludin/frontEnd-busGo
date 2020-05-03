@@ -22,6 +22,7 @@ import EditBus from './pages/buses/Edit'
 import CreateBus from './pages/buses/CreateBus'
 import Routes from './pages/Route/Routes'
 import EditRoutes from './pages/Route/Edit'
+import CreateRoutes from './pages/Route/Post'
 import Schedules from './pages/Schedule/Schedules'
 import EditSchedules from './pages/Schedule/Edit'
 import CreateSchedules from './pages/Schedule/CreateSchedule'
@@ -70,6 +71,7 @@ class App extends React.Component {
             <Route path='/bus/add' exact render={(props) => <CreateBus {...props} />} />
             <Route path='/bus/:id' exact render={(props) => <EditBus {...props} />} />
             <Route path='/route' exact render={(props) => <Routes {...props} />} />
+            <Route path='/route/add' exact render={(props) => <CreateRoutes {...props} />} />
             <Route path='/route/:id' exact render={(props) => <EditRoutes {...props} />} />
             <Route path='/schedule' exact render={(props) => <Schedules {...props} />} />
             <Route path='/schedule/add' exact render={(props) => <CreateSchedules {...props} />} />

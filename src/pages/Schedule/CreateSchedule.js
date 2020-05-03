@@ -43,10 +43,10 @@ class CreateSchedule extends Component{
             <Col md={3}></Col>
             <Col md={5}>
               <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
-                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
+                <h2 className='text-dark text-center font-weight-bold'>Add Schedule</h2>
                 <FormGroup>
                   <Label>Time Go</Label>
-                  <Input type='text' 
+                  <Input type='time' 
                     placeholder={'time to go'} 
                     value={this.state.timeGo} 
                     onChange={(e) => this.setState({timeGo: e.target.value})} 
@@ -54,11 +54,14 @@ class CreateSchedule extends Component{
                 </FormGroup>
                 <FormGroup>
                   <Label>Arrive</Label>
-                  <Input type='text' placeholder={this.state.arrive} 
+                  <Input type='time' 
+                  placeholder={'time arrive'}
                   value={this.state.arrive} 
                   onChange={(e) => this.setState({arrive: e.target.value})} />
                 </FormGroup>
-                <Button  color='success'>Save</Button>
+                <div>
+                  <Button style={{float: "right"}} color='success'>Save</Button>
+                </div>
               </Form>
             </Col>
             </Row>
