@@ -93,12 +93,27 @@ class Users extends Component {
               <FormGroup>
                 <table style={{ width: '100%' }}>
                   <tr>
-                    <td style={{ width: '80%' }}>
+                    <td>
                       <div className='searchbar'>
                         <i class="fas fa-search"></i>
                         <Input type='search' placeholder='input your name' onChange={this.searchUser} />
                       </div>
                     </td>
+                    <td>
+                            <label></label>
+                            <select>
+                              <option>search by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select>
+                              <option>sort by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
                     {/* <td className='text-right'>
                       <Link to='/agents/add'><button type='submit' className='btn btn-success buttonAdd'> Add User</button></Link>
                     </td> */}

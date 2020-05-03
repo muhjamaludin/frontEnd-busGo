@@ -161,7 +161,6 @@ class Agent extends Component {
                                 type='submit'
                                 className='btn btn-success buttonAdd'
                               >
-                                {' '}
                               Add Agent
                             </button>
                             </Link>

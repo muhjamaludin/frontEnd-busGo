@@ -1,10 +1,7 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import { connect } from 'react-redux'
-import config from '../../utils/config'
 import { editAgent } from '../../redux/actions/agentActions'
-
-import qs from 'qs'
+import Sidebar from '../../components/Sidebar'
 
 import {
   Container,
@@ -35,9 +32,10 @@ class EditAgent extends Component {
   }
   componentDidMount() {
     const results = this.props.agents
-    const data = results.data
-    console.log(this.state)
-    this.setState({ id: this.props.match.params.id, data })
+    const id = this.props.match.params.id
+    const data = results.agents
+    console.log('data', data)
+    this.setState({ idUser: id, data })
     // const data = results.data
     // this.setState({ id: this.props.match.params.id, data })
     // console.log(agent)
@@ -49,7 +47,7 @@ class EditAgent extends Component {
     this.submitData = async (e) => {
       e.preventDefault()
       // this.setState({isLoading: true})
-      const submit = this.props.editAgent
+      const submit = this.props.editAgent()
       if (submit.data.success) {
         this.setState({ isLoading: false })
         this.props.history.push('/agents')
@@ -64,14 +62,39 @@ class EditAgent extends Component {
   }
 
   render() {
-    const { id, isLoading } = this.state
-    const { idUser, name } = this.state.data
-    console.log(this.state)
+    const { idUser, name } = this.state
+    console.log('result', this.state.data.username)
     return (
-      <Container>
-        {isLoading && <>Loading...</>}
-        {
           <>
+            <Row>
+              <Sidebar />
+              <Col md={11}>
+                <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
+                  <h2 className='text-dark text-center font-weight-bold'>
+                    Update Agency
+                  </h2>
+                  <FormGroup>
+                    <Label>username</Label>
+                    <Input
+                      type='text'
+                      placeholder={this.state.data.username}
+                      value={this.state.data.username} 
+                      onChange={((e) => this.setState({username: e.target.value}))}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Agent Name</Label>
+                    <Input
+                      type='text'
+                      placeholder={this.state.data.name}
+                      // value={name}
+                      onChange={(e) => this.changeData(e, 'name')}
+                    />
+                  </FormGroup>
+                  <Button color='success'>Save</Button>
+                </Form>
+              </Col>
+            </Row>
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Alert</ModalHeader>
               <ModalBody>{this.state.modalMessage}</ModalBody>
@@ -80,48 +103,13 @@ class EditAgent extends Component {
               </ModalFooter>
             </Modal>
           </>
-        }
-        {id && !isLoading && (
-          <>
-            <Row>
-              <Col md={12}>
-                <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
-                  <h2 className='text-dark text-center font-weight-bold'>
-                    Update Agency
-                  </h2>
-                  <FormGroup>
-                    <Label>id User</Label>
-                    <Input
-                      type='text'
-                      placeholder={this.state.data[0].id_user}
-                      value={idUser}
-                      onChange={(e) => this.changeData(e, 'idUser')}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Bus Name</Label>
-                    <Input
-                      type='text'
-                      placeholder={this.state.data[0].name}
-                      value={name}
-                      onChange={(e) => this.changeData(e, 'name')}
-                    />
-                  </FormGroup>
-                  <Button color='success'>Save</Button>
-                </Form>
-              </Col>
-            </Row>
-          </>
-        )}
-      </Container>
     )
   }
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.agents.data.data)
   return {
-    agents: state.agents.data,
+    agents: state.agents
   }
 }
 

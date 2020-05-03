@@ -7,6 +7,7 @@ import Reservations from './Reservations/reservations'
 import '../styles/app.css'
 import { Col, Row } from 'reactstrap'
 import { Chart } from 'react-charts'
+import Board from './Reservations/Board'
 
 class Dashboard extends Component {
   constructor(props) {
@@ -31,9 +32,9 @@ class Dashboard extends Component {
           <Sidebar />
           <Col md={11}>
             <Card />
-            <Row className='mt-4' style={{ height: '400px' }}>
+            <Row className='mt-2'>
               <Col md={12}>
-                <Reservations />
+                <Board />
               </Col>
             </Row>
           </Col>

@@ -114,12 +114,12 @@ class Route extends Component {
           <Col md={1}></Col>
           <Col md={9} className='mt-4' >
             <Row>
-              <Col md={10}>
+              <Col md={12}>
                 <Form>
                   <FormGroup>
                     <table style={{ width: '100%' }}>
                       <tr>
-                        <td style={{ width: '80%' }}>
+                        <td>
                           <div className='searchbar'>
                             <i class='fas fa-search'></i>
                             <Input
@@ -129,6 +129,21 @@ class Route extends Component {
                             />
                           </div>
                         </td>
+                        <td>
+                            <label></label>
+                            <select>
+                              <option>search by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select>
+                              <option>sort by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
                         <td className='text-right'>
                           <Link to='/route/add'>
                             <button

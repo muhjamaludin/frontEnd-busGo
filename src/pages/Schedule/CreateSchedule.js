@@ -14,8 +14,8 @@ class CreateSchedule extends Component{
   constructor(props){
     super(props)
     this.state = {
-      departure_time: '',
-      arrive_time: '',
+      timeGo: '',
+      arrive: '',
       isLoading: false,
       showModal: false,
       modalMessage: ''
@@ -51,17 +51,30 @@ class CreateSchedule extends Component{
 
     
   render(){
-    const {id,isLoading} = this.state
-    const {departure, arrive} = this.state.data
     return(
-    <Container>
-      {isLoading&&(
         <>
-          Loading...
-        </>
-      )}
-      {
-        <>
+          <Row>
+            <Col md={12}>
+              <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
+                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
+                <FormGroup>
+                  <Label>Time Go</Label>
+                  <Input type='text' 
+                    placeholder={'time to go'} 
+                    value={this.state.timeGo} 
+                    onChange={(e) => this.setState({timeGo: e.target.value})} 
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Arrive</Label>
+                  <Input type='text' placeholder={this.state.arrive} 
+                  value={this.state.arrive} 
+                  onChange={(e) => this.setState({arrive: e.target.value})} />
+                </FormGroup>
+                <Button  color='success'>Save</Button>
+              </Form>
+            </Col>
+          </Row>
           <Modal isOpen={this.state.showModal}>
             <ModalHeader>Alert</ModalHeader>
             <ModalBody>
@@ -72,28 +85,6 @@ class CreateSchedule extends Component{
             </ModalFooter>
           </Modal>
         </>
-      }
-      {id && !isLoading &&(
-        <>
-          <Row>
-            <Col md={12}>
-              <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
-                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
-                <FormGroup>
-                  <Label>Time Go</Label>
-                  <Input type='text' placeholder={this.state.data[0].departure_time} value={departure} onChange={(e) => this.changeData(e, 'departure')} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Arrive</Label>
-                  <Input type='text' placeholder={this.state.data[0].arrive_time} value={arrive} onChange={(e) => this.changeData(e, 'arrive')} />
-                </FormGroup>
-                <Button  color='success'>Save</Button>
-              </Form>
-            </Col>
-          </Row>
-        </>
-      )}
-    </Container>
     )
   }
 }

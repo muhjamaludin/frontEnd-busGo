@@ -124,12 +124,12 @@ class Bus extends Component {
           <Col md={1}></Col>
           <Col md={9} className="mt-4" >
             <Row>
-              <Col md={10}>
+              <Col md={12}>
                 <Form>
                   <FormGroup>
-                    <table style={{ width: '100%' }}>
+                    <table style={{width: '100%'}}>
                       <tr>
-                        <td style={{ width: '80%' }}>
+                        <td>
                           <div className='searchbar'>
                             <Input
                               type='search'
@@ -138,6 +138,21 @@ class Bus extends Component {
                             />
                           </div>
                         </td>
+                        <td>
+                            <label></label>
+                            <select>
+                              <option>search by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select>
+                              <option>sort by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
                         <td className='text-right'>
                           <Link to='/bus/add'>
                             <button

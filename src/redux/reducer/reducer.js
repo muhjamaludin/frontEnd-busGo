@@ -6,6 +6,7 @@ import routeReducer from './routeReducer'
 import priceReducer from './priceReducer'
 import userReducer from './userReducer'
 import reserveReducer from './reserveReducer'
+import boardReducer from './BoardReducer'
 // import authReducer from './authReducer'
 
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   price: priceReducer,
   user: userReducer,
   reserve: reserveReducer,
+  board: boardReducer
   // auth: authReducer
 })
 
