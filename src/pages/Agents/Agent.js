@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import config from '../../utils/config'
 import { connect } from 'react-redux'
-import { getAgents, searchData, movePage } from '../../redux/actions/agentActions'
+import { getAgents, deleteAgent, searchData, movePage } from '../../redux/actions/agentActions'
 
 import {
   Table,
@@ -101,25 +102,14 @@ class Agent extends Component {
     //   const { pageInfo } = results.data;
     //   this.setState({ agents: data, pageInfo });
     // };
-    // this.deleteData = async () => {
-    //   const results = await axios.delete(
-    //     config.APP_BACKEND.concat(`agents/${this.state.selectedId}`)
-    //   );
-    //   if (results.data.success) {
-    //     console.log('test');
-    //     const newData = await axios.get(config.APP_BACKEND.concat('agents'));
-    //     const { data } = newData.data;
-    //     const { pageInfo } = newData.data;
-    //     this.setState({
-    //       agents: data,
-    //       pageInfo,
-    //       showModal: false,
-    //       selectedId: 0
-    //     });
-    //   } else {
-    //     console.log(results.data);
-    //   }
-    // };
+    this.deleteData = async e => {
+      e.preventDefault()
+      const id = this.state.selectedId
+      console.log('id', id)
+      await this.props.deleteAgent(id)
+      await this.props.getAgents()
+      this.setState({showModal: false})
+    }
   }
   componentDidMount() {
     this.props.getAgents()
@@ -134,13 +124,13 @@ class Agent extends Component {
           <Col md={1}></Col>
           <Col md={9} className='mt-4'>
             <Row>
-              <Col md={10}>
+              <Col md={12}>
                 {this.props.agents && this.props.agents.length !== 0 ? (
                   <Form>
                     <FormGroup>
-                      <table style={{ width: '100%' }}>
+                      <table style={{width: '100%'}}>
                         <tr>
-                          <td style={{ width: '80%' }}>
+                          <td>
                             <div className='searchbar'>
                               <i class='fas fa-search'></i>
                               <Input
@@ -148,10 +138,22 @@ class Agent extends Component {
                                 placeholder='input your agent'
                                 onChange={this.searchAgent}
                               />
-                            </div>
-                            <div>
-                              {/* <FaSearch onClick={this.Clicked} /> */}
-                            </div>
+                            </div>                    
+                          </td>
+                          <td>
+                            <label></label>
+                            <select>
+                              <option>search by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select>
+                              <option>sort by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
                           </td>
                           <td className='text-right'>
                             <Link to='/agents/add'>
@@ -190,7 +192,7 @@ class Agent extends Component {
                       <td>
                         <Link
                           className='buttonEdit'
-                          to={`/agents/${this.props.agents[i].id}`}
+                          to={`/agents/${v.id}`}
                         >
                           <FaEdit size={24} />
                         </Link>
@@ -199,7 +201,7 @@ class Agent extends Component {
                           onClick={() =>
                             this.setState({
                               showModal: true,
-                              selectedId: this.props.agents[i].id,
+                              selectedId: v.id,
                             })
                           }
                         >
@@ -248,9 +250,9 @@ class Agent extends Component {
                   onPageChanged={this.onPageChanged} />
               </Col> */}
             </Row>
-            <Modal isOpen={this.props.showModal}>
+            <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete Agent</ModalHeader>
-              <ModalBody>Are u sure want to delete agent?</ModalBody>
+              <ModalBody>Are you sure want to delete this agent?</ModalBody>
               <ModalFooter>
                 <Button color='success' onClick={this.deleteData}>
                   OK
@@ -279,6 +281,6 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = { getAgents }
+const mapDispatchToProps = { getAgents, deleteAgent }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Agent)

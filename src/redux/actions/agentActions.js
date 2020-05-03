@@ -51,18 +51,22 @@ export const editAgent = (id, data) => async (dispatch) => {
   }
 }
 
-export const addAgent = (idUser, name) => async (dispatch) => {
+export const addAgent = (username, name) => async (dispatch) => {
   try {
     const res = await axios({
       method: 'post',
       url: Config.APP_BACKEND.concat('agents/add'),
-      data: { idUser: idUser, name: name },
+      data: { username: username, name: name },
       headers: { 'Content-Type': 'application/json' },
     })
+    if (res.data.msg === 'jwt expired') {
+      console.log('Ayewwww')
+    }
     dispatch({
       type: 'ADD_AGENT',
       payload: res.data,
     })
+    console.log('response post agent', res)
   } catch (error) {
     console.log(error)
   }
@@ -77,6 +81,7 @@ export const deleteAgent = (id) => async (dispatch) => {
       type: 'DELETE_AGENT',
       payload: res.data,
     })
+    console.log('respon delete', res)
   } catch (error) {
     console.log(error)
   }

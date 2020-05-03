@@ -26,7 +26,7 @@ class PostAgent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      idUser: '',
+      username: '',
       name: '',
       data: {},
       isLoading: false,
@@ -37,7 +37,7 @@ class PostAgent extends Component {
       e.preventDefault()
       // this.setState({isLoading: true})
       console.log(this.state)
-      this.props.addAgent(this.state.idUser, this.state.name)
+      this.props.addAgent(this.state.username, this.state.name)
       this.props.history.push('/agents')
     }
     this.dismissModal = () => {
@@ -81,12 +81,11 @@ class PostAgent extends Component {
                   </h2>
                   <div style={{marginTop: '30px'}}>
                   <FormGroup>
-                    <Label>id User</Label>
+                    <Label>Username</Label>
                     <Input
-                      type='number'
-                      value={this.state.idUser}
+                      value={this.state.username}
                       onChange={(e) =>
-                        this.setState({ idUser: e.target.value })
+                        this.setState({ username: e.target.value })
                       }
                     />
                   </FormGroup>
