@@ -4,6 +4,7 @@ import axios from 'axios'
 import Sidebar from '../../components/Sidebar'
 import {getUsers} from '../../redux/actions/userActions'
 import {connect} from 'react-redux'
+import Config from '../../utils/config'
 
 import {
   Table, Container, Button,
@@ -13,6 +14,7 @@ import {
 import { MdDeleteForever } from 'react-icons/md'
 import { FaEdit, FaEye } from 'react-icons/fa'
 import '../../styles/search.css'
+import {Profile} from './UserDetail'
 
 import { Link } from 'react-router-dom'
 
@@ -21,6 +23,14 @@ class Users extends Component {
     super(props)
     this.state = {
       users: [],
+      picture: '',
+      username: '',
+      fullname: '',
+      identity: '',
+      gender: '',
+      phone: '',
+      address: '',
+      balance: '',
       pageInfo: {
         page: 0,
         perPage: 0,
@@ -31,9 +41,13 @@ class Users extends Component {
       },
       currentPage: 1,
       sort: 0,
+      Profile: '',
       showModal: false,
       selectedId: 0,
       startFrom: 1
+    }
+    this.Profile = async () => {
+
     }
 
     this.nextData = async () => {
@@ -75,10 +89,6 @@ class Users extends Component {
     }
   }
   async componentDidMount() {
-    const results = await axios.get(config.APP_BACKEND.concat('users'))
-    const { data } = results.data
-    const { pageInfo } = results.data
-    this.setState({ users: data, pageInfo })
     this.props.getUsers()
   }
 
@@ -100,7 +110,6 @@ class Users extends Component {
                       </div>
                     </td>
                     <td>
-                            <label></label>
                             <select>
                               <option>search by</option>
                               <option>username</option>
@@ -114,9 +123,6 @@ class Users extends Component {
                               <option>agent</option>
                             </select>
                           </td>
-                    {/* <td className='text-right'>
-                      <Link to='/agents/add'><button type='submit' className='btn btn-success buttonAdd'> Add User</button></Link>
-                    </td> */}
                   </tr>
                 </table>
               </FormGroup>
@@ -143,9 +149,20 @@ class Users extends Component {
                 <td> {this.props.user[i].phone} </td>
                 <td> {this.props.user[i].role_id} </td>
                 <td>
-                  <Link style={{ marginRight: '40px', color: 'black' }} to={`/user/userdetail/${this.props.user[i].id}`}>
-                    <FaEye />
-                  </Link>
+                  {/* <Link style={{ marginRight: '40px', color: 'black' }} to={`/user/userdetail/${this.props.user[i].id}`}> */}
+                    <FaEye style={{ marginRight: '40px', color: 'black' }} 
+                      onClick={() => this.setState({
+                        Profile: true,
+                        picture: this.props.user[i].profile_picture,
+                        username: this.props.user[i].username,
+                        fullname: this.props.user[i].fullname,
+                        identity: this.props.user[i].identity,
+                        gender: this.props.user[i].gender,
+                        phone: this.props.user[i].phone,
+                        address: this.props.user[i].address,
+                        balance: this.props.user[i].balance,
+                        })} />
+                  {/* </Link> */}
                   <Link to={`/user/edit/${this.props.user[i].id}`}>
                     <FaEdit color={'blue'} />
                   </Link>
@@ -157,7 +174,7 @@ class Users extends Component {
             ))}
           </tbody>
         </Table>
-        <Row>
+        {/* <Row>
         <Col md={3} className='text-center'>
             <Button disabled={this.props.page.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
           </Col>
@@ -167,15 +184,68 @@ class Users extends Component {
           <Col md={3} className='text-right'>
             Page {this.props.page.page}/{this.props.page.totalPage} Total Data {this.props.page.totalData} Limit {this.props.page.perPage}
           </Col>
-        </Row>
-        {/* <Modal isOpen={this.state.showModal}>
+        </Row> */}
+        <Modal className='modal-lg' isOpen={this.state.Profile}>
+          <ModalHeader>Profile</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col md={2} />
+              <Col md={8} >
+                <Row>
+                  <Col md={6}>
+                    <Row>
+                        Profile picture:
+                    </Row>
+                    <Row>
+                    <img src={Config.APP_BACKEND.concat(`profile/${this.state.picture}`)} width={200} height={200} alt={this.state.picture} />
+                    </Row>
+                  </Col>
+                  <Col md={6}>
+                    <Row>
+                      <Col md={4}>Username:</Col>
+                      <Col md={8}> {this.state.username} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={4}>Fullname:</Col>
+                      <Col md={6}> {this.state.fullname} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={4}>Identity:</Col>
+                      <Col md={6}> {this.state.identity} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={4}>Gender:</Col>
+                      <Col md={6}> {this.state.gender} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={4}>Phone:</Col>
+                      <Col md={6}> {this.state.phone} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={4}>Address:</Col>
+                      <Col md={6}> {this.state.address} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={4}>Balance:</Col>
+                      <Col md={6}> {this.state.balance} </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color='danger' onClick={() => this.setState({ Profile: false})}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={this.state.showModal}>
           <ModalHeader>Delete User</ModalHeader>
           <ModalBody>Are u sure want to delete user?</ModalBody>
           <ModalFooter>
             <Button color='success' onClick={this.deleteData}>OK</Button>
             <Button color='danger' onClick={() => this.setState({ showModal: false, selectedId: 0 })}>Cancel</Button>
           </ModalFooter>
-        </Modal> */}
+        </Modal>
         </Col>
         </Row>
       </>

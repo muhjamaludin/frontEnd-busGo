@@ -12,7 +12,6 @@ export const getBoard = () => async (dispatch) => {
             type: 'GET_BOARD',
             payload: res.data
         })
-        console.log('isi board', res.data)
     } catch (error) {
         console.log(error)
     }

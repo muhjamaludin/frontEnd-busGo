@@ -21,8 +21,8 @@ import Buses from './pages/buses/buses'
 import EditBus from './pages/buses/Edit'
 import CreateBus from './pages/buses/CreateBus'
 import Routes from './pages/Route/Routes'
-import EditRoutes from './pages/Route/Edit'
 import CreateRoutes from './pages/Route/Post'
+import EditRoute from './pages/Route/Edit'
 import Schedules from './pages/Schedule/Schedules'
 import EditSchedules from './pages/Schedule/Edit'
 import CreateSchedules from './pages/Schedule/CreateSchedule'
@@ -30,6 +30,7 @@ import Prices from './pages/Price/Prices'
 import EditPrices from './pages/Price/Edit'
 import PostPrice from './pages/Price/Post'
 import Reservations from './pages/Reservations/reservations'
+import AddReservation from './pages/Reservations/CreateReservation'
 import NotFound from './components/NotFound'
 
 class App extends React.Component {
@@ -72,7 +73,7 @@ class App extends React.Component {
             <Route path='/bus/:id' exact render={(props) => <EditBus {...props} />} />
             <Route path='/route' exact render={(props) => <Routes {...props} />} />
             <Route path='/route/add' exact render={(props) => <CreateRoutes {...props} />} />
-            <Route path='/route/:id' exact render={(props) => <EditRoutes {...props} />} />
+            <Route path='/route/:id' exact render={(props) => <EditRoute {...props} />} />
             <Route path='/schedule' exact render={(props) => <Schedules {...props} />} />
             <Route path='/schedule/add' exact render={(props) => <CreateSchedules {...props} />} />
             <Route path='/schedule/:id' exact render={(props) => <EditSchedules {...props} />} />
@@ -80,6 +81,7 @@ class App extends React.Component {
             <Route path='/price/add' exact render={(props) => <PostPrice {...props} />} />
             <Route path='/price/:id' exact render={(props) => <EditPrices {...props} />} />
             <Route path='/reserve' exact render={(props) => <Reservations {...props} />} />
+            <Route path='/reserve/add' exact render={(props) => <AddReservation {...props} />} />
             <Route path="*" exact render={(props) => <NotFound {...props} />} />
           </Switch>
 

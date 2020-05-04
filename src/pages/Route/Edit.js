@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
-import axios from 'axios'
-import config from '../../utils/config'
-
-import qs from 'qs'
+import {getRoutesById, editRoutes} from '../../redux/actions/routeActions'
+import {connect} from 'react-redux'
+import Sidebar from '../../components/Sidebar'
 
 import {
   Container, Form, FormGroup,
@@ -15,51 +14,59 @@ class EditRoute extends Component{
     super(props)
     this.state = {
       id: 0,
-      data: {},
+      departure: '',
+      destination: '',
       isLoading: false,
       showModal: false,
-      modalMessage: ''
-    }
-  }
-  async componentDidMount(){
-    const results = await axios.get(config.APP_BACKEND.concat(`route/${this.props.match.params.id}`))
-    const {data} = results.data
-    console.log(data)
-    this.setState({id:this.props.match.params.id, data})
-    this.changeData = (e, form) => {
-      const {data} = this.state
-      data[form] = e.target.value 
-      this.setState({data})
+      modalMessage: '',
+      dataRoutesById: {}
     }
     this.submitData = async (e)=>{
       e.preventDefault()
-      // this.setState({isLoading: true})
-      const submit = await axios.patch(config.APP_BACKEND.concat(`route/${this.props.match.params.id}`),qs.stringify(this.state.data))
-      console.log(submit.data)
-      if(submit.data.success){
-        this.setState({isLoading: false})
-        this.props.history.push('/route')
-      }else{
-        this.setState({modalMessage: submit.data.msg})
+      const data = {
+        departure: this.state.departure,
+        destination: this.state.destination
       }
-    }
-    this.dismissModal = () => {
-      this.setState({showModal: false})
-      this.props.history.push('/route')
+      const id = this.props.match.params.id
+      this.props.editRoutes(id, data)
+      console.log('masa', id, data)
+        this.props.history.push('/route')
     }
   }
+  componentDidMount(){
+    const id = this.props.match.params.id
+    this.props.getRoutesById(id)
+    }
   render(){
-    const {id,isLoading} = this.state
-    const {departure, destination} = this.state.data
+    console.log('ini', this.props)
     return(
-    <Container>
-      {isLoading&&(
         <>
-          Loading...
-        </>
-      )}
-      {
-        <>
+          <Row>
+            <Sidebar />
+            <Col md={3} />
+            <Col md={5}>
+              <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
+                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
+                <FormGroup>
+                  <Label>Departure</Label>
+                  <Input 
+                    type='text' 
+                    // placeholder={this.props.route.data[0].departure} 
+                    value={this.state.departure} 
+                    onChange={(e) => this.setState({departure: e.target.value})} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Destination</Label>
+                  <Input 
+                    type='text' 
+                    // placeholder={this.props.route.data[0].destination} 
+                    value={this.state.destination} 
+                    onChange={(e) => this.setState({destination: e.target.value})} />
+                </FormGroup>
+                <Button style={{float: "right"}} color='success'>Save</Button>
+              </Form>
+            </Col>
+          </Row>
           <Modal isOpen={this.state.showModal}>
             <ModalHeader>Alert</ModalHeader>
             <ModalBody>
@@ -70,30 +77,14 @@ class EditRoute extends Component{
             </ModalFooter>
           </Modal>
         </>
-      }
-      {id && !isLoading &&(
-        <>
-          <Row>
-            <Col md={12}>
-              <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
-                <h2 className='text-dark text-center font-weight-bold'>Update Route</h2>
-                <FormGroup>
-                  <Label>Departure</Label>
-                  <Input type='text' placeholder={this.state.data[0].departure} value={departure} onChange={(e) => this.changeData(e, 'departure')} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Destination</Label>
-                  <Input type='text' placeholder={this.state.data[0].destination} value={destination} onChange={(e) => this.changeData(e, 'destination')} />
-                </FormGroup>
-                <Button  color='success'>Save</Button>
-              </Form>
-            </Col>
-          </Row>
-        </>
-      )}
-    </Container>
     )
   }
 }
 
-export default EditRoute
+const mapStateToProps = state => {
+  return {
+    route: state.route.routes
+  }
+}
+
+export default connect(mapStateToProps, {getRoutesById, editRoutes})(EditRoute)

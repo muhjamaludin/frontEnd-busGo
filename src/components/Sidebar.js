@@ -20,7 +20,7 @@ class Sidebar extends Component {
                     <Link to='/agents'> <li><FaUserTie size={20} /> <br/>Agent</li> </Link>
                     <Link to='/bus'> <li><FaBus size={20} /> <br/>Bus</li> </Link>
                     <Link to='/route'> <li><FaRoad size={20} /> <br/>Route</li> </Link>
-                    <Link to='/schedule'> <li><AiOutlineSchedule size={20} /> <br/>Schedule</li> </Link>
+                    <Link to='/schedule'> <li><AiOutlineSchedule size={20} /> <br/>Time List</li> </Link>
                     <Link to='/price'> <li><FaMoneyCheckAlt size={20} /> <br/>Price</li> </Link>
                     <hr />
                     {/* <li><FaRegUserCircle /> MyProfile</li> */}

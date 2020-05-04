@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { editAgent } from '../../redux/actions/agentActions'
+import { editAgent, getAgentById, getAgents } from '../../redux/actions/agentActions'
 import Sidebar from '../../components/Sidebar'
 
 import {
@@ -22,37 +22,28 @@ class EditAgent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      idUser: '',
+      username: '',
       name: '',
-      data: {},
       isLoading: false,
       showModal: false,
       modalMessage: '',
     }
-  }
-  componentDidMount() {
-    const results = this.props.agents
-    const id = this.props.match.params.id
-    const data = results.agents
-    console.log('data', data)
-    this.setState({ idUser: id, data })
-    // const data = results.data
-    // this.setState({ id: this.props.match.params.id, data })
-    // console.log(agent)
-    this.changeData = (e, form) => {
-      const { data } = this.state
-      data[form] = e.target.value
-      this.setState({ data })
-    }
     this.submitData = async (e) => {
       e.preventDefault()
       // this.setState({isLoading: true})
-      const submit = this.props.editAgent()
-      if (submit.data.success) {
+    const id = this.props.agents[0].id
+    console.log(id)
+    const data = {
+        username: this.state.username,
+        name: this.state.name
+      }
+      const submit = this.props.editAgent(id, data)
+      if (submit) {
         this.setState({ isLoading: false })
         this.props.history.push('/agents')
       } else {
         this.setState({ modalMessage: submit.data.msg })
+        this.props.history.push('/agents')
       }
     }
     this.dismissModal = () => {
@@ -60,15 +51,19 @@ class EditAgent extends Component {
       this.props.history.push('/agents')
     }
   }
+  componentDidMount() {
+    const id = this.props.match.params.id
+    this.props.getAgentById(id)
+  }
 
   render() {
-    const { idUser, name } = this.state
-    console.log('result', this.state.data.username)
+    console.log('result', this.props.agents)
     return (
           <>
             <Row>
               <Sidebar />
-              <Col md={11}>
+              <Col md={3} />
+              <Col md={5}>
                 <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
                   <h2 className='text-dark text-center font-weight-bold'>
                     Update Agency
@@ -77,8 +72,8 @@ class EditAgent extends Component {
                     <Label>username</Label>
                     <Input
                       type='text'
-                      placeholder={this.state.data.username}
-                      value={this.state.data.username} 
+                      placeholder={this.props.agents[0].username}
+                      value={this.props.agents[0].username} 
                       onChange={((e) => this.setState({username: e.target.value}))}
                     />
                   </FormGroup>
@@ -86,12 +81,12 @@ class EditAgent extends Component {
                     <Label>Agent Name</Label>
                     <Input
                       type='text'
-                      placeholder={this.state.data.name}
-                      // value={name}
-                      onChange={(e) => this.changeData(e, 'name')}
+                      placeholder={this.props.agents[0].name}
+                      value={this.state.name}
+                      onChange={(e) => this.setState({name: e.target.value})}
                     />
                   </FormGroup>
-                  <Button color='success'>Save</Button>
+                  <Button style={{float: "right"}} color='success'>Save</Button>
                 </Form>
               </Col>
             </Row>
@@ -109,10 +104,11 @@ class EditAgent extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    agents: state.agents
+    agents: state.agents.agents,
+    allAgent: state
   }
 }
 
-const mapDispatchToProps = { editAgent }
+const mapDispatchToProps = { editAgent, getAgentById, getAgents }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditAgent)

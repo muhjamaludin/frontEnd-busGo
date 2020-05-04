@@ -11,11 +11,10 @@ color: black !important;
 
 .previous {
 color: black ;
-border-radius: 50% !important;
 }
 
 .next {
 background-color: cornflowerblue !important;
 color: white !important;
-border-radius: 50% !important;
+background-color: #053354 !important;
 }

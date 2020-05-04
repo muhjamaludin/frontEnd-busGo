@@ -63,36 +63,34 @@ class Agent extends Component {
       console.log(data)
     }
 
-    // this.nextData = () => {
-    //   const data = this.props.agents.data.data
-    //   console.log(data)
-    //   const pageInfo = this.props.agents.data.pageInfo
-    //   console.log(pageInfo)
-    //   this.setState({
-    //     agents: data,
-    //     pageInfo,
-    //     startFrom: this.state.startFrom + pageInfo.perPage,
-    //   })
-    //   console.log(this.state)
-    // }
-    // this.prevData = async () => {
-    //   const results = await axios.get(this.state.pageInfo.prevLink)
-    //   const { data } = results.data
-    //   const { pageInfo } = results.data
-    //   this.setState({
-    //     agents: data,
-    //     pageInfo,
-    //     startFrom: this.state.startFrom - pageInfo.perPage,
-    //   })
-    // }
-    // this.searchAgent = async e => {
-    //   const results = await axios.get(
-    //     config.APP_BACKEND.concat(`agents?search[agent]=${e.target.value}`)
-    //   );
-    //   const { data } = results.data;
-    //   const { pageInfo } = results.data;
-    //   this.setState({ agents: data, pageInfo });
-    // };
+    this.nextData = () => {
+      const data = this.props.agents
+      console.log(data)
+      const pageInfo = this.props.agents.pageInfo
+      console.log(pageInfo)
+      this.setState({
+        agents: data,
+        pageInfo,
+        startFrom: this.state.startFrom + pageInfo.perPage,
+      })
+      console.log(this.state.startFrom, this.state.agents)
+    }
+    this.prevData = async () => {
+      const results = this.props.agents.pageInfo.prevLink
+      const { data } = results
+      const { pageInfo } = results
+      this.setState({
+        agents: data,
+        pageInfo,
+        startFrom: this.state.startFrom - pageInfo.perPage,
+      })
+    }
+    this.searchAgent = async e => {
+      this.props.getAgents(e.target.value)
+      // const { data } = results.data;
+      // const { pageInfo } = results.data;
+      // this.setState({ agents: data, pageInfo });
+    };
     // this.sortAgent = async () => {
     //   this.setState({ sort: this.state.sort ? '' : 1 });
     //   const results = await axios.get(
@@ -116,7 +114,7 @@ class Agent extends Component {
   }
 
   render() {
-    console.log('props', this.props.agents)
+    console.log('info', this.props.agents.pageInfo)
     return (
       <>
         <Row>
@@ -125,7 +123,7 @@ class Agent extends Component {
           <Col md={9} className='mt-4'>
             <Row>
               <Col md={12}>
-                {this.props.agents && this.props.agents.length !== 0 ? (
+                {this.props.agents && this.props.agents.agents.length !== 0 ? (
                   <Form>
                     <FormGroup>
                       <table style={{width: '100%'}}>
@@ -182,8 +180,8 @@ class Agent extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.agents && this.props.agents.length && this.props.agents &&
-                  this.props.agents.map((v, i) => (
+                {this.props.agents.agents && this.props.agents.agents.length && this.props.agents.agents &&
+                  this.props.agents.agents.map((v, i) => (
                     <tr className='text-center'>
                       <td>{1 + i}</td>
                       <td>{v.username}</td>
@@ -215,7 +213,7 @@ class Agent extends Component {
             <Col md={3} className='text-center' style={{height: '10%'}}>
                 <Button
                   disabled={
-                    this.props && this.props.pageInfo.prevLink ? false : true
+                    this.props.agents && this.props.agents.pageInfo.prevLink ? false : true
                   }
                   onClick={this.prevData}
                   className='previous'
@@ -226,15 +224,15 @@ class Agent extends Component {
               <Col md={6} className='text-center'>
                 <Button
                   disabled={
-                    this.props && this.props.pageInfo.nextLink ? false : true
+                    this.props.agents.pageInfo && this.props.agents.pageInfo.nextLink ? false : true
                   }
                   onClick={this.nextData}
                   className='next'
                 >
                   &#8250;
                 </Button>
-              </Col>
-              <Col md={3} className='text-right'>
+              </Col> */}
+              {/* <Col md={3} className='text-right'>
                 Page {this.props.pageInfo && this.props.pageInfo.page}/
                 {this.props.pageInfo && this.props.pageInfo.totalPage}{' '} Total
                 Data {this.props.pageInfo && this.props.pageInfo.totalData}
@@ -275,8 +273,7 @@ class Agent extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    agents: state.agents.agents,
-    pageInfo: state.agents.pageInfo
+    agents: state.agents
   }
 }
 

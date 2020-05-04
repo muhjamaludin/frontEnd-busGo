@@ -37,6 +37,8 @@ export const editAgent = (id, data) => async (dispatch) => {
       Config.APP_BACKEND.concat(`agents/${id}`),
       qs.stringify(data)
     )
+    console.log('respon', res)
+    console.log('id', id)
     if (res) {
       alert('Success edit Agent')
     } else {

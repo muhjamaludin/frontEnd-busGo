@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
-import axios from 'axios'
-import config from '../../utils/config'
-
-import qs from 'qs'
+import {getAgents} from '../../redux/actions/agentActions'
+import {getRoutes} from '../../redux/actions/routeActions'
+import {getSchedules} from '../../redux/actions/scheduleActions'
+import {addBus} from '../../redux/actions/busActions'
+import {connect} from 'react-redux'
 
 import {
   Container, Form, FormGroup,
@@ -16,12 +17,12 @@ class CreateBus extends Component{
   constructor(props){
     super(props)
     this.state = {
-      routes: [],
-      picture: '', 
-      busName: '', 
-      busSeat: '', 
-      classBus: '', 
+      picture: '',
+      idAgent: '',
       idRoute: '',
+      idSchedule: '',
+      busName: '', 
+      classBus: '',
       isLoading: false,
       showModal: false,
       modalMessage: ''
@@ -31,22 +32,18 @@ class CreateBus extends Component{
       e.preventDefault()
       // this.setState({isLoading: true})
       var bodyFormData = new FormData()
-      bodyFormData.set('busName', this.state.busName)
-      bodyFormData.set('busSeat', this.state.busSeat)
-      bodyFormData.set('classBus', this.state.classBus)
-      bodyFormData.set('idRoute', this.state.idRoute)
+      bodyFormData.set('idAgent', this.state.idAgent)
+      bodyFormData.set('idBusRoute', this.state.idRoute)
+      bodyFormData.set('idBusSchedule', this.state.idSchedule)
       bodyFormData.append('picture', this.state.picture)
-      await axios({
-        method: 'post',
-        url: 'http://localhost:8080/bus/add',
-        data: bodyFormData,
-        headers: {'Content-Type': 'multipart/form-data' }
-      })
+      bodyFormData.set('busName', this.state.busName)
+      bodyFormData.set('classBus', this.state.classBus)
+      console.log('isi state', this.state.idAgent, this.state.idRoute, this.state.idSchedule, this.state.busName, this.state.classBus)
+      console.log('amerika', bodyFormData)
+      this.props.addBus(bodyFormData)
       this.setState({isLoading: false})
       this.props.history.push('/bus')
     }
-    
-
 
     this.dismissModal = () => {
       this.setState({showModal: false})
@@ -54,13 +51,11 @@ class CreateBus extends Component{
     }
   }
     async componentDidMount () {
-      const results = await axios.get(config.APP_BACKEND.concat(`route`))
-      const {data} = results.data
-      this.setState({routes:data})
+      this.props.getAgents()
   }
 
   render(){
-
+      console.log('ini dul', this.state.picture)
     return(
       
         <>
@@ -73,10 +68,10 @@ class CreateBus extends Component{
               <Button onClick={this.dismissModal}>Ok</Button>
             </ModalFooter>
           </Modal>
-          
           <Row>
           <Sidebar />
-            <Col md={10}>
+          <Col md={3} />
+            <Col md={5}>
               <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
                 <h2 className='text-dark text-center font-weight-bold'>New Bus</h2>
               <FormGroup>
@@ -84,34 +79,53 @@ class CreateBus extends Component{
                   <Input type='file' value={this.state.picture} onChange={(e) => this.setState({picture: e.target.value})} />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Bus Name</Label>
-                  <Input type='text' value={this.state.busName} onChange={(e) => this.setState({busName: e.target.value})} />
+                <Label>Agent</Label>
+                    <select className='form-control' value={this.state.value} onChange={(e) => this.setState({idAgent: e.target.value})} >
+                  {this.props.agent.length && this.props.agent.map((data, i) => (
+                      <option value={data.id}>{data.name}</option>
+                  ))}
+                  </select>
                 </FormGroup>
                 <FormGroup>
-                  <Label className='numberInput'>Bus Seat</Label>
-                  <Input type='number' value={this.state.busSeat} onChange={((e) => this.setState({busSeat: e.target.value}))} />
+                  <Label >Route</Label>
+                  <select className='form-control' value={this.state.value} onChange={(e) => this.setState({idRoute: e.target.value})} >
+                    {this.props.routes && this.props.routes.map((data, i) => (
+                        <option value={data.id}>{data.departure} - {data.destination}</option>
+                    ))}
+                  </select>
+                </FormGroup>
+                <FormGroup>
+                  <Label >Schedule</Label>
+                  <select className='form-control' value={this.state.value} onChange={(e) => this.setState({idRoute: e.target.value})} >
+                    {this.props.schedules && this.props.schedules.map((data, i) => (
+                        <option value={data.id}>{data.departure_time} - {data.arrive_time}</option>
+                    ))}
+                  </select>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bus Name</Label>
+                  <Input type='text' value={this.state.busName} onChange={(e) => this.setState({busName: e.target.value})} />
                 </FormGroup>
                 <FormGroup>
                   <Label>Class Bus</Label>
                   <Input type='text' value={this.state.classBus} onChange={(e) => this.setState({classBus: e.target.value})} />
                 </FormGroup>
-                <FormGroup>
-                  <Label >Route</Label>
-                  <select className='form-control' >
-                    {this.state.routes && this.state.routes.map((data, i) => (
-                        <option value={data.id}>{data.departure}</option>
-                    ))}
-                  </select>
-                </FormGroup>
-                <Button type='submit' color='success'>Save</Button>
+                
+                <Button type='submit' style={{float: 'right'}} color='success'>Save</Button>
               </Form>
             </Col>
           </Row>
         </>
-      
-    
     )
   }
 }
 
-export default CreateBus
+const mapStateToProps = state => {
+  return {
+    agent: state.agents.agents,
+    routes: state.route.routes,
+    schedules: state.schedule.schedules
+  }
+}
+
+export default connect(mapStateToProps, {getAgents, getRoutes, getSchedules, addBus})(CreateBus)

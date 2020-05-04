@@ -3,7 +3,7 @@ import { Col, Row, Card as CardData } from 'reactstrap'
 
 import {getBusses} from '../redux/actions/busActions'
 import {getRoutes} from '../redux/actions/routeActions'
-import {getSchedules} from '../redux/actions/scheduleActions'
+import {getBoard} from '../redux/actions/BoardActions'
 import {getAgents} from '../redux/actions/agentActions'
 
 import {connect} from 'react-redux'
@@ -24,11 +24,12 @@ class Card extends Component {
   async componentDidMount() {
     this.props.getBusses()
     this.props.getRoutes()
-    this.props.getSchedules()
+    this.props.getBoard()
     this.props.getAgents()
   }
 
   render() {
+    console.log('get', this.props.board)
     return (
       <Row className='rowCard'>
         <Col md={3}>
@@ -48,7 +49,7 @@ class Card extends Component {
         </Col>
         <Col md={3}>
           <CardData className='sizeCard schedule'>
-            <MdSchedule className='icon' /> {this.props.schedule.totalData} Schedules
+            <MdSchedule className='icon' /> {this.props.board.totalData} Schedules
           </CardData>
         </Col>
       </Row>
@@ -60,9 +61,9 @@ const mapStateToProps = state => {
   return {
     bus: state.bus.pageInfo,
     route: state.route.pageInfo,
-    schedule: state.schedule.pageInfo,
+    board: state.board.boards.pageInfo,
     agen: state.agents.pageInfo
   }
 }
 
-export default connect(mapStateToProps, {getBusses, getRoutes, getSchedules, getAgents})(Card)
+export default connect(mapStateToProps, {getBusses, getRoutes, getBoard, getAgents})(Card)

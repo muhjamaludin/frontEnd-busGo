@@ -47,23 +47,23 @@ class Reserve extends Component {
   }
   componentDidMount() {
     this.props.getReserve()
-    console.log(this.props.getReserve)
   }
 
   render() {
-    console.log(this.props.reservations)
+    console.log('dangdut', this.props.reservations.data)
     return (
       <>
         <Row>
-          <Col md={1}></Col>
-          <Col md={8}>
-            <Row>
-              <Col md={10}>
+          <Sidebar />
+          <Col md={1} />
+          <Col md={9}>
+            <Row className='mt-4'>
+              <Col md={12}>
                 <Form>
                   <FormGroup>
                     <table style={{ width: '100%' }}>
                       <tr>
-                        <td style={{ width: '80%' }}>
+                        <td style={{ width: '40%' }}>
                           <div className='searchbar'>
                             <i class='fas fa-search'></i>
                             <Input
@@ -73,11 +73,27 @@ class Reserve extends Component {
                             />
                           </div>
                         </td>
+                        <td>
+                            <select>
+                              <option>search by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select>
+                              <option>sort by</option>
+                              <option>username</option>
+                              <option>agent</option>
+                            </select>
+                          </td>
+                          <div className='buton'>
                         <td className='text-right'>
-                          <Link to='/reservations/add'>
-                            <AddButton name={'Reservations'} />
+                          <Link to='/reserve/add'>
+                            <AddButton className='ml-auto' name={'Reservations'} />
                           </Link>
                         </td>
+                        </div>
                       </tr>
                     </table>
                   </FormGroup>
@@ -85,17 +101,18 @@ class Reserve extends Component {
               </Col>
             </Row>
             <Table>
-              <thead>
+              <thead className='thead-dark'>
                 <tr className='text-center'>
                   <th>No</th>
                   <th onClick={this.sortRoute}>Username</th>
+                  <th>Full Name</th>
                   <th>Bus Name</th>
                   <th>Class Bus</th>
                   <th>Bus Seat</th>
                   <th>Departure</th>
                   <th>Destination</th>
-                  <th>Time Go</th>
-                  <th>Arrive</th>
+                  <th>Status</th>
+                  <th>Options</th>
                 </tr>
               </thead>
               <tbody>
@@ -105,13 +122,14 @@ class Reserve extends Component {
                   this.props.reservations.data.map((data, i) => (
                     <tr className='text-center'>
                       <td>{i + 1}</td>
-                      <td>{data.bus_name}</td>
+                      <td>{data.username}</td>
+                      <td>{data.fullname}</td>
+                      <td>{data.busName}</td>
                       <td>{data.classBus}</td>
+                      <td>{data.seat}</td>
                       <td>{data.departure}</td>
                       <td>{data.destination}</td>
-                      <td>{data.departure_time}</td>
-                      <td>{data.arrive_time}</td>
-                      <td>{data.seat}</td>
+                      <td>{data.statusBoard}</td>
                       <td>
                         <Link
                           className='buttonEdit'
@@ -198,7 +216,7 @@ class Reserve extends Component {
 const mapStateToProps = state => {
   console.log(state)
   return {
-    reservations: state.reserve.reservations,
+    reservations: state.reserve.reservations
   }
 }
 

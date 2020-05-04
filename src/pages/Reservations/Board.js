@@ -59,7 +59,7 @@ class Reserve extends Component {
                   <FormGroup>
                     <table style={{ width: '100%' }}>
                       <tr>
-                        <td style={{ width: '80%' }}>
+                        <td style={{ width: '40%' }}>
                           <div className='searchbar'>
                             <i class='fas fa-search'></i>
                             <Input
@@ -68,6 +68,18 @@ class Reserve extends Component {
                               // onChange={this.searchRoute}
                             />
                           </div>
+                        </td>
+                        <td>
+                          <label>search by</label>
+                          <select>
+                            <option>Bus Name</option>
+                          </select>
+                        </td>
+                        <td>
+                          <label>sort by</label>
+                          <select>
+                            <option>Bus Name</option>
+                          </select>
                         </td>
                         <td className='text-right'>
                           <Link to='/reservations/add'>
@@ -100,7 +112,7 @@ class Reserve extends Component {
               <tbody>
                 {this.props.board.data.length && this.props.board.data.map((data, i) => (
                     <tr className='text-center'>
-                      <td>{i + 1}</td>
+                      <td>{this.state.startFrom + i}</td>
                       <td>{data.agent}</td>
                       <td>{data.busName}</td>
                       <td>{data.classBus}</td>
@@ -134,19 +146,11 @@ class Reserve extends Component {
                   ))}
               </tbody>
             </Table>
-            {/* <Row>
-              <Col md={12} className='text-right'>
-                Page {this.props.reservations.pageInfo && this.props.reservations.pageInfo.page}/
-                {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalPage} Total
-                Data {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalData}{' '}
-                Limit {this.props.reservations.pageInfo && this.props.reservations.pageInfo.perPage}
-              </Col>
-            </Row>
             <Row>
-              <Col md={6} className='text-center'>
+            <Col md={3} className='text-center'>
                 <Button
                   disabled={
-                    this.props.reservations.pageInfo && this.props.reservations.pageInfo.prevLink
+                    this.props.board.pageInfo && this.props.board.pageInfo.prevLink
                       ? false
                       : true
                   }
@@ -159,7 +163,7 @@ class Reserve extends Component {
               <Col md={6} className='text-center'>
                 <Button
                   disabled={
-                    this.props.reservations.pageInfo && this.props.reservations.pageInfo.nextLink
+                    this.props.board.pageInfo && this.props.board.pageInfo.nextLink
                       ? false
                       : true
                   }
@@ -169,7 +173,13 @@ class Reserve extends Component {
                   &#8250;
                 </Button>
               </Col>
-            </Row> */}
+              <Col md={3} className='text-right'>
+                Page {this.props.board.pageInfo && this.props.board.pageInfo.page}/
+                {this.props.board.pageInfo && this.props.board.pageInfo.totalPage} Total
+                Data {this.props.board.pageInfo && this.props.board.pageInfo.totalData}{' '}
+                Limit {this.props.board.pageInfo && this.props.board.pageInfo.perPage}
+              </Col>
+            </Row>
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete route</ModalHeader>
               <ModalBody>Are u sure want to delete route?</ModalBody>

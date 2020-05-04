@@ -1,5 +1,6 @@
 const initialState = {
   routes: [],
+  route: [],
   pageInfo: {},
   isLoading: false,
 }
@@ -17,7 +18,7 @@ export default function Routes(state = initialState, actions) {
       return {
         ...state,
         isLoading: false,
-        routes: actions.payload,
+        route: actions.payload,
       }
     case 'EDIT_ROUTE':
       return {
