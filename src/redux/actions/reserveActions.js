@@ -30,3 +30,16 @@ export const addReserve = (data) => async dispatch => {
         console.log(error)
     }
 }
+
+export const addBoard = (data) => async dispatch => {
+    try {
+        const res = await axios.post(Config.APP_BACKEND.concat('reserve/board/'), data)
+        dispatch({
+            type: 'ADD_BOARD',
+            payload: res.data
+        })
+        console.log('add board', res)
+    } catch (error) {
+        console.log(error)
+    }
+}

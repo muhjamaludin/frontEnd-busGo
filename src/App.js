@@ -13,6 +13,7 @@ import Sidebar from './components/Sidebar'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import AddBoard from './pages/Reservations/CreateBoard'
 import Users from './pages/Users/Users'
 import Agents from './pages/Agents/Agent'
 import CreateAgents from './pages/Agents/Post'
@@ -82,6 +83,7 @@ class App extends React.Component {
             <Route path='/price/:id' exact render={(props) => <EditPrices {...props} />} />
             <Route path='/reserve' exact render={(props) => <Reservations {...props} />} />
             <Route path='/reserve/add' exact render={(props) => <AddReservation {...props} />} />
+            <Route path='/reserve/board/add' exact render={(props) => <AddBoard {...props} />} />
             <Route path="*" exact render={(props) => <NotFound {...props} />} />
           </Switch>
 

@@ -82,8 +82,8 @@ class Reserve extends Component {
                           </select>
                         </td>
                         <td className='text-right'>
-                          <Link to='/reservations/add'>
-                            <AddButton name={'Reservations'} />
+                          <Link to='/reserve/board/add'>
+                            <AddButton name={'Add Board'} />
                           </Link>
                         </td>
                       </tr>
@@ -122,7 +122,7 @@ class Reserve extends Component {
                       <td>{data.arrive}</td>
                       <td>{data.price}</td>
                       <td>{data.seat}</td>
-                      <td>{data.schedule.slice(1, 10)}</td>
+                      <td>{data.schedule.slice(0, 10)}</td>
                       <td>
                         <Link
                           className='buttonEdit'
