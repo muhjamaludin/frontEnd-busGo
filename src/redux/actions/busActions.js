@@ -56,26 +56,18 @@ export const editBus = (id, data) => async (dispatch) => {
 
 export const addBus = (bodyFormData) => async (dispatch) => {
   try {
-    const res = await axios({
-      method: 'post',
-      url: Config.APP_BACKEND.concat('bus/add'),
-      data: bodyFormData,
-      headers: {'Content-Type': 'multipart/form-data' }
-    })
+    console.log('body', bodyFormData)
+    const res = await axios.post(Config.APP_BACKEND.concat('bus/add'), bodyFormData)
+    console.log('add Bus Jalan', res)
     dispatch({
       type: 'ADD_BUS',
       payload: res.data
     })
-    console.log('add Bus Jalan', res)
     if (res) {
       alert('Add Bus Success')
     } else {
       alert('Add Bus Failed')
     }
-    dispatch({
-      type: 'ADD_BUS',
-      payload: res.data,
-    })
   } catch (error) {
     console.log(error)
   }

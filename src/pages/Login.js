@@ -12,7 +12,7 @@ import Loading from '../components/Loading'
 import config from '../utils/config'
 import { connect } from 'react-redux'
 
-import { userLoginFetch } from '../redux/actions/actions'
+import { setLogin } from '../redux/actions/AuthActions'
 
 
 class Login extends Component {
@@ -44,22 +44,8 @@ class Login extends Component {
         username: this.state.username,
         password: this.state.password
       }
-
-      const connection = await axios.post(config.APP_BACKEND.concat('auth/login'), params)
-      console.log(connection)
-
-      if (connection.data.success) {
-        setTimeout(() => {
-          this.setState({ isLoading: false }, () => {
-            localStorage.setItem('token', connection.data.token)
-            localStorage.setItem('roleId', connection.data.roleId)
-            this.props.check()
-            this.props.history.push('/dashboard')
-          })
-        }, 1000)
-      } else {
-        this.setState({ showModal: true, isLoading: false })
-      }
+      this.props.setLogin(params)
+      // await this.setState({ showModal: true, isLoading: false })
     }
     this.checkLogin = () => {
       if (localStorage.getItem('token')) {
@@ -132,8 +118,6 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  userLoginFetch: userInfo => dispatch(userLoginFetch(userInfo))
-})
 
-export default connect(null, mapDispatchToProps)(Login)
+
+export default connect(null, {setLogin})(Login)

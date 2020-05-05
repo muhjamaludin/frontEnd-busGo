@@ -5,7 +5,6 @@ const initialState = {
 }
 
 export default function Agents(state = initialState, actions) {
-  console.log(actions)
   switch (actions.type) {
     case 'GET_AGENTS':
       return {

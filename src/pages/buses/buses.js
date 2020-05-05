@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 import config from '../../utils/config'
 import {getBusses} from '../../redux/actions/busActions'
+import Config from '../../utils/config'
 
 import {
   Table,
@@ -40,6 +41,15 @@ class Bus extends Component {
         nextLink: null,
         prevLink: null
       },
+      detail: false,
+      picture: '',
+      name: '',
+      busName: '',
+      classBus: '',
+      departure: '',
+      destination: '',
+      timeGo: '',
+      arrive: '',
       currentPage: 1,
       sort: 0,
       showModal: false,
@@ -108,10 +118,6 @@ class Bus extends Component {
   }
 
   async componentDidMount() {
-    const results = await axios.get(config.APP_BACKEND.concat('bus'))
-    const { data } = results.data
-    const { pageInfo } = results.data
-    this.setState({ buses: data, pageInfo })
     this.props.getBusses()
   }
 
@@ -183,22 +189,32 @@ class Bus extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.bus.length &&
-                  this.props.bus.map((v, i) => (
-                    <tr key={this.props.bus[i].created_at}>
+                {this.props.bus.busses.length &&
+                  this.props.bus.busses.map((v, i) => (
+                    <tr key={this.props.bus.busses[i].created_at}>
                       <td>{1 + i}</td>
-                      <td>{this.props.bus[i].bus_name}</td>
-                      <td>{this.props.bus[i].class_bus}</td>
-                      <td>{this.props.bus[i].departure}</td>
-                      <td>{this.props.bus[i].destination}</td>
-                      <td>{this.props.bus[i].name}</td>
+                      <td>{this.props.bus.busses[i].bus_name}</td>
+                      <td>{this.props.bus.busses[i].class_bus}</td>
+                      <td>{this.props.bus.busses[i].departure}</td>
+                      <td>{this.props.bus.busses[i].destination}</td>
+                      <td>{this.props.bus.busses[i].name}</td>
                       <td>
-                      <Link style={{ marginRight: '40px', color: 'black' }} to={`/user/userdetail/`}>
-                        <FaEye />
-                      </Link>
+                      {/* <Link  to={`/user/userdetail/`}> */}
+                        <FaEye style={{ marginRight: '40px', color: 'black' }} onClick={() => this.setState({
+                          detail: true,
+                          picture: this.props.bus.busses[i].picture,
+                          name: this.props.bus.busses[i].name,
+                          busName: this.props.bus.busses[i].bus_name,
+                          classBus: this.props.bus.busses[i].class_bus,
+                          departure: this.props.bus.busses[i].departure,
+                          destination: this.props.bus.busses[i].destination,
+                          timeGo: this.props.bus.busses[i].departure_time,
+                          arrive: this.props.bus.busses[i].arrive_time
+                        })} />
+                      {/* </Link> */}
                         <Link
                           className='buttonEdit'
-                          to={`/bus/${this.props.bus[i].id}`}
+                          to={`/bus/${this.props.bus.busses[i].id}`}
                         >
                           <FiEdit />
                         </Link>
@@ -207,7 +223,7 @@ class Bus extends Component {
                           onClick={() =>
                             this.setState({
                               showModal: true,
-                              selectedId: this.props.bus[i].id
+                              selectedId: this.props.bus.busses[i].id
                             })
                           }
                         >
@@ -238,9 +254,9 @@ class Bus extends Component {
                 </Button>
               </Col>
               <Col md={3} className='text-right '>
-                Page {this.state.pageInfo.page}/{this.state.pageInfo.totalPage}{' '}
-                Total Data {this.state.pageInfo.totalData} Limit{' '}
-                {this.state.pageInfo.perPage}
+                Page {this.props.bus.pageInfo.page}/{this.props.bus.pageInfo.totalPage}{' '}
+                Total Data {this.props.bus.pageInfo.totalData} Limit{' '}
+                {this.props.bus.pageInfo.perPage}
               </Col>
             </Row>
             <Modal isOpen={this.state.showModal}>
@@ -262,13 +278,66 @@ class Bus extends Component {
             </Modal>
           </Col>
         </Row>
+        <Modal className='modal-lg' isOpen={this.state.detail}>
+          <ModalHeader>Bus Detail</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col md={2} />
+              <Col md={8} >
+                <Row>
+                  <Col md={6}>
+                    <Row>
+                        Bus Picture:
+                    </Row>
+                    <Row>
+                    <img src={Config.APP_BACKEND.concat(`bus/${this.state.picture}`)} width={200} height={200} alt={this.state.picture} />
+                    </Row>
+                  </Col>
+                  <Col md={6}>
+                    <Row>
+                      <Col md={6}>Name:</Col>
+                      <Col md={6}> {this.state.name} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>Bus name:</Col>
+                      <Col md={6}> {this.state.busName} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>Class bus:</Col>
+                      <Col md={6}> {this.state.classBus} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>Departure:</Col>
+                      <Col md={6}> {this.state.departure} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>Destination:</Col>
+                      <Col md={6}> {this.state.destination} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>Time go:</Col>
+                      <Col md={6}> {this.state.timeGo} </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>Arrive:</Col>
+                      <Col md={6}> {this.state.arrive} </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color='danger' onClick={() => this.setState({ detail: false})}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
       </>
     )
   }
 }
 const mapStateToProps = state => {
   return {
-    bus: state.bus.busses
+    bus: state.bus
   }
 }
 

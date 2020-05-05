@@ -15,6 +15,7 @@ import { MdDeleteForever } from 'react-icons/md'
 import { FaEdit, FaEye } from 'react-icons/fa'
 import '../../styles/search.css'
 import {Profile} from './UserDetail'
+import {BusDetail} from '../buses/BusDetail'
 
 import { Link } from 'react-router-dom'
 

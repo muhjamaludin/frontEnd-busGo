@@ -27,21 +27,24 @@ class CreateBus extends Component{
       showModal: false,
       modalMessage: ''
     }
+    this.file = React.createRef()
 
     this.submitData = async (e)=>{
       e.preventDefault()
+      console.log('files upload', this.file.current)
       // this.setState({isLoading: true})
-      var bodyFormData = new FormData()
-      bodyFormData.set('idAgent', this.state.idAgent)
-      bodyFormData.set('idBusRoute', this.state.idRoute)
-      bodyFormData.set('idBusSchedule', this.state.idSchedule)
+      let bodyFormData = new FormData()
+      bodyFormData.append('idAgent', this.state.idAgent)
+      bodyFormData.append('idBusRoute', this.state.idRoute)
+      bodyFormData.append('idBusSchedule', this.state.idSchedule)
       bodyFormData.append('picture', this.state.picture)
-      bodyFormData.set('busName', this.state.busName)
-      bodyFormData.set('classBus', this.state.classBus)
+      bodyFormData.append('busName', this.state.busName)
+      bodyFormData.append('classBus', this.state.classBus)
+
       console.log('isi state', this.state.idAgent, this.state.idRoute, this.state.idSchedule, this.state.busName, this.state.classBus)
       console.log('amerika', bodyFormData)
       this.props.addBus(bodyFormData)
-      this.setState({isLoading: false})
+      // this.setState({isLoading: false})
       this.props.history.push('/bus')
     }
 
@@ -76,7 +79,7 @@ class CreateBus extends Component{
                 <h2 className='text-dark text-center font-weight-bold'>New Bus</h2>
               <FormGroup>
                   <Label>Picture</Label>
-                  <Input type='file' value={this.state.picture} onChange={(e) => this.setState({picture: e.target.value})} />
+                  <Input type='file' ref={this.file} onChange={(e) => this.setState({picture: e.target.files[0]})} />
                 </FormGroup>
                 <FormGroup>
                 <Label>Agent</Label>
@@ -96,7 +99,7 @@ class CreateBus extends Component{
                 </FormGroup>
                 <FormGroup>
                   <Label >Schedule</Label>
-                  <select className='form-control' value={this.state.value} onChange={(e) => this.setState({idRoute: e.target.value})} >
+                  <select className='form-control' value={this.state.value} onChange={(e) => this.setState({idSchedule: e.target.value})} >
                     {this.props.schedules && this.props.schedules.map((data, i) => (
                         <option value={data.id}>{data.departure_time} - {data.arrive_time}</option>
                     ))}

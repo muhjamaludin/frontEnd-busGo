@@ -27,6 +27,12 @@ class Reserve extends Component {
     super(props)
     this.state = {
       routes: [],
+      value: '',
+      page: 1,
+      searchKey: '',
+      searchValue: '',
+      sortKey: '',
+      sortValue: '',
       pageInfo: {
         page: 0,
         perPage: 0,
@@ -41,7 +47,34 @@ class Reserve extends Component {
       selectedId: 0,
       startFrom: 1,
     }
+
+    this.nextData = () => {
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.pageInfo.perPage })
+      const data = {
+        page: this.state.page,
+      }
+      console.log('data', data)
+      this.props.getBoard(data)
+    }
+    this.prevData = () => {
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.pageInfo.perPage})
+      const data = {
+        page: this.state.page
+      }
+      this.props.getBoard(data)
+    }
+    this.sortData = (e) => {
+      this.setState({sortValue: 1 ? 0 : 1})
+      this.props.getBoard(this.state.sortKey, this.state.sortValue)
+      console.log('sort', this.sortKey)
+    }
+    this.searchData = (e) => {
+      this.setState({searchValue: e.target.value})
+      this.props.getBoard(this.state.searchKey, this.state.searchValue)
+      console.log('data', this.state.searchKey, this.state.searchValue)
+    }
   }
+
   componentDidMount() {
     this.props.getBoard()
   }
@@ -65,20 +98,39 @@ class Reserve extends Component {
                             <Input
                               type='search'
                               placeholder='input your name'
-                              // onChange={this.searchRoute}
+                              value={this.state.searchValue}
+                              onChange={this.searchData}
                             />
                           </div>
                         </td>
                         <td>
                           <label>search by</label>
-                          <select>
-                            <option>Bus Name</option>
+                          <select onChange={(e) => this.setState({searchKey: e.target.value})} >
+                            <option value="name">Agent</option>
+                            <option value="bus_name">Bus Name</option>
+                            <option value="class_bus">Class Bus</option>
+                            <option value="departure">Departure</option>
+                            <option value="destination">Destination</option>
+                            <option value="departure_time">Time Go</option>
+                            <option value="arrive_time">Arrive</option>
+                            <option value="price">Price</option>
+                            <option value="seat">Seat</option>
+                            <option value="schedule">Schedule</option>
                           </select>
                         </td>
                         <td>
                           <label>sort by</label>
-                          <select>
-                            <option>Bus Name</option>
+                          <select onChange={(e) => this.setState({sortKey: e.target.value})} onClick={this.sortData} >
+                            <option value="name">Agent</option>
+                            <option value="bus_name">Bus Name</option>
+                            <option value="class_bus">Class Bus</option>
+                            <option value="departure">Departure</option>
+                            <option value="destination">Destination</option>
+                            <option value="departure_time">Time Go</option>
+                            <option value="arrive_time">Arrive</option>
+                            <option value="price">Price</option>
+                            <option value="seat">Seat</option>
+                            <option value="schedule">Schedule</option>
                           </select>
                         </td>
                         <td className='text-right'>
