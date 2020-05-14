@@ -19,6 +19,12 @@ export default function Reserve(state = initialState, actions) {
                 isLoading: false,
                 reservations: actions.payload,
             }
+        case 'GET_SEAT':
+            return {
+                ...state,
+                isLoading: false,
+                reservations: actions.payload
+            }
         case 'EDIT_RESERVATION':
             return {
                 ...state,

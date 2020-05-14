@@ -44,8 +44,13 @@ class Login extends Component {
         username: this.state.username,
         password: this.state.password
       }
-      this.props.setLogin(params)
-      // await this.setState({ showModal: true, isLoading: false })
+      this.props.setLogin(params).then( () => {
+        if(localStorage.getItem('token')) {
+          this.props.history.push('/dashboard')
+        } else {
+          this.setState({ showModal: true, isLoading: false })
+        }
+      })
     }
     this.checkLogin = () => {
       if (localStorage.getItem('token')) {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {getPricesById, editPrice} from '../../redux/actions/priceActions'
+import {getBoardById, getBoard, editBoard} from '../../redux/actions/BoardActions'
 import {connect} from 'react-redux'
 import Sidebar from '../../components/Sidebar'
 import {
@@ -8,13 +8,14 @@ import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
 
-class EditPrice extends Component{
+class EditBoard extends Component{
   constructor(props){
     super(props)
     this.state = {
       id: 0,
-      idBus: '',
-      price: '',
+      idPrice: '',
+      schedule: '',
+      seat: '',
       start: false,
       isLoading: false,
       showModal: false,
@@ -24,16 +25,17 @@ class EditPrice extends Component{
       e.preventDefault()
       const id = this.props.match.params.id
       const data = {
-        idBus: this.state.idBus,
-        price: this.state.price
+        idPrice: this.state.idPrice,
+        schedule: this.state.schedule,
+        seat: this.state.seat
       }
-      this.props.editPrice(id, data)
-      this.props.history.push('/price')      
+      this.props.editBoard(id, data)
+      this.props.history.push('/dashboard')      
     }
   }
   async componentDidMount(){
     const id = this.props.match.params.id
-    this.props.getPricesById(id)
+    this.props.getBoardById(id)
     
     this.dismissModal = () => {
       this.setState({showModal: false})
@@ -41,16 +43,16 @@ class EditPrice extends Component{
     }
   }
   componentDidUpdate() {
-    if (this.props.price && !this.state.start) {
+    if (this.props.board && !this.state.start) {
       this.setState({
-        idBus: this.props.price[0].id_bus,
-        price: this.props.price[0].price,
+        idPrice: this.props.board[0].id_price,
+        schedule: this.props.board[0].schedule.slice(0, 10),
+        seat: this.props.board[0].seat,
         start: true
       })
     }
   }
   render(){
-    console.log('props', this.props.price)
     return(
         <>
           <Row>
@@ -58,18 +60,24 @@ class EditPrice extends Component{
             <Col md={4} />
             <Col md={3}>
               <Form className='mt-2' onSubmit={this.submitData}>
-                <h2 className='text-dark text-center font-weight-bold'>Update Price</h2>
+                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
                 <FormGroup>
-                  <Label>id Bus</Label>
+                  <Label>id Price</Label>
                   <Input type='text'  
-                    value={this.state.idBus} 
-                    onChange={(e) => this.setState({idBus: e.target.value})} />
+                    value={this.state.idPrice} 
+                    onChange={(e) => this.setState({idPrice: e.target.value})} />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Price</Label>
+                  <Label>Schedule</Label>
+                  <Input type='date' 
+                    value={this.state.schedule} 
+                    onChange={(e) => this.setState({schedule: e.target.value})} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Seat</Label>
                   <Input type='text'  
-                    value={this.state.price} 
-                    onChange={(e) => this.setState({price: e.target.value})} />
+                    value={this.state.seat} 
+                    onChange={(e) => this.setState({seat: e.target.value})} />
                 </FormGroup>
                 <Button style={{float: "right"}} color='success'>Save</Button>
               </Form>
@@ -82,8 +90,8 @@ class EditPrice extends Component{
 
 const mapStateToProps = state => {
   return {
-    price: state.price.prices.data
+    board: state.board.boards.data
   }
 }
 
-export default connect(mapStateToProps, {getPricesById, editPrice})(EditPrice)
+export default connect(mapStateToProps, {getBoardById, getBoard, editBoard})(EditBoard)

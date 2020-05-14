@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
-import config from '../../utils/config'
-import axios from 'axios'
 import { connect } from 'react-redux'
-import { getReserve } from '../../redux/actions/reserveActions'
+import { getReserve, deleteReservation } from '../../redux/actions/reserveActions'
 
 import {
   Table,
@@ -22,7 +20,7 @@ import {
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { MdDeleteForever, MdEdit } from 'react-icons/md'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaSort } from 'react-icons/fa'
 import AddButton from '../../components/Button'
 
 class Reserve extends Component {
@@ -38,15 +36,59 @@ class Reserve extends Component {
         nextLink: null,
         prevLink: null,
       },
+      page: 1,
+      limit: 5,
+      searchKey: 'status',
+      sortKey: 'username',
+      searchValue: '',
+      sortValue: 0,
       currentPage: 1,
       sort: 0,
       showModal: false,
       selectedId: 0,
       startFrom: 1,
     }
+    this.limit = (e) => {
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('limit', this.state.limit)
+      this.props.getReserve(page, limit, searchKey, searchValue, sortKey, sortValue)
+    }
+
+    this.nextData = () => {
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getReserve(page + 1, limit, searchKey, searchValue, sortKey, sortValue)
+    }
+    this.prevData = () => {
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getReserve(page - 1, limit, searchKey, searchValue, sortKey, sortValue)
+    }
+    this.searchReserve = async (e) => {
+      this.setState({searchValue: e.target.value})
+      const {page, limit, searchKey, sortKey, sortValue} = this.state
+      this.props.getReserve(page, limit, searchKey, e.target.value, sortKey || 'username', sortValue)
+    }
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getReserve(page, limit, searchKey, searchValue, sortKey, sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getReserve(page, limit, searchKey, searchValue, sortKey, sortValue)
+      }
+    }
+    this.deleteData = async () => {
+      const id = this.state.selectedId
+      this.props.deleteUser(id)
+      this.props.getReserve(1, 5, this.state.searchKey || 'status', this.state.searchValue || '', this.state.sortKey || 'status', this.state.sortValue || '')
+      this.setState({showModal: false})
+    }
   }
   componentDidMount() {
-    this.props.getReserve()
+    this.props.getReserve(1, 5,'status', this.state.searchValue || '', this.state.sortKey || 'status', this.state.sortValue || 0)
   }
 
   render() {
@@ -68,31 +110,40 @@ class Reserve extends Component {
                             <i class='fas fa-search'></i>
                             <Input
                               type='search'
-                              placeholder='input your name'
-                              onChange={this.searchRoute}
+                              placeholder='input your search'
+                              onChange={this.searchReserve}
                             />
                           </div>
                         </td>
                         <td>
-                            <select>
-                              <option>search by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                          <label>Search By</label>
+                        <select onChange={(e) => this.setState({searchKey: e.target.value})}>
+                              <option value="status">Status</option>
+                              <option value="username">Username</option>
+                              <option value="fullname">Fullname</option>
+                              <option value="bus_name">Bus Name</option>
+                              <option value="departure">Departure</option>
+                              <option value="destination">Destination</option>
                             </select>
                           </td>
                           <td>
-                            <select>
-                              <option>sort by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <label>Sort By</label>
+                            <select onChange={(e) => this.setState({sortKey: e.target.value})}>
+                              <option value="username">Username</option>
+                              <option value="fullname">Fullname</option>
+                              <option value="bus_name">Bus Name</option>
+                              <option value="departure">Departure</option>
+                              <option value="destination">Destination</option>
+                              <option value="status">Status</option>
                             </select>
+                            <FaSort color={'#053354'} size={23} onClick={this.sort} />
                           </td>
                           <div className='buton'>
-                        <td className='text-right'>
+                        {/* <td className='text-right'>
                           <Link to='/reserve/add'>
                             <AddButton className='ml-auto' name={'Reservations'} />
                           </Link>
-                        </td>
+                        </td> */}
                         </div>
                       </tr>
                     </table>
@@ -108,11 +159,11 @@ class Reserve extends Component {
                   <th>Full Name</th>
                   <th>Bus Name</th>
                   <th>Class Bus</th>
-                  <th>Bus Seat</th>
+                  <th>No Seat</th>
                   <th>Departure</th>
                   <th>Destination</th>
                   <th>Status</th>
-                  <th>Options</th>
+                  <th style={{width: 150}}>Options</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,7 +172,7 @@ class Reserve extends Component {
                   this.props.reservations.data &&
                   this.props.reservations.data.map((data, i) => (
                     <tr className='text-center'>
-                      <td>{i + 1}</td>
+                      <td>{i + this.state.startFrom}</td>
                       <td>{data.username}</td>
                       <td>{data.fullname}</td>
                       <td>{data.busName}</td>
@@ -133,7 +184,7 @@ class Reserve extends Component {
                       <td>
                         <Link
                           className='buttonEdit'
-                          to={`/route/${this.props.reservations.data[i].id}`}
+                          to={`/reserve/${data.id}`}
                         >
                           <FaEdit />
                         </Link>
@@ -142,7 +193,7 @@ class Reserve extends Component {
                           onClick={() =>
                             this.setState({
                               showModal: true,
-                              selectedId: this.props.reservations.data[i].id,
+                              selectedId: data.id,
                             })
                           }
                         >
@@ -153,16 +204,8 @@ class Reserve extends Component {
                   ))}
               </tbody>
             </Table>
-            {/* <Row>
-              <Col md={12} className='text-right'>
-                Page {this.props.reservations.pageInfo && this.props.reservations.pageInfo.page}/
-                {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalPage} Total
-                Data {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalData}{' '}
-                Limit {this.props.reservations.pageInfo && this.props.reservations.pageInfo.perPage}
-              </Col>
-            </Row>
             <Row>
-              <Col md={6} className='text-center'>
+            <Col md={2} className='text-center'>
                 <Button
                   disabled={
                     this.props.reservations.pageInfo && this.props.reservations.pageInfo.prevLink
@@ -175,7 +218,7 @@ class Reserve extends Component {
                   &#8249;
                 </Button>
               </Col>
-              <Col md={6} className='text-center'>
+              <Col md={5} className='text-center'>
                 <Button
                   disabled={
                     this.props.reservations.pageInfo && this.props.reservations.pageInfo.nextLink
@@ -188,10 +231,26 @@ class Reserve extends Component {
                   &#8250;
                 </Button>
               </Col>
-            </Row> */}
+              <Col md={2}>
+                <label>Limit</label>
+                <select value={this.state.limit} onChange={(e) => this.setState({limit: e.target.value})}>
+                  <option value="5" onClick={this.limit} >5</option>
+                  <option value="10" onClick={this.limit} >10</option>
+                  <option value="25" onClick={this.limit} >25</option>
+                  <option value="50" onClick={this.limit} >50</option>
+                  <option value="100" onClick={this.limit} >100</option>
+                </select>
+              </Col>
+              <Col md={3} className='text-right'>
+                Page {this.props.reservations.pageInfo && this.props.reservations.pageInfo.page}/
+                {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalPage} Total
+                Data {this.props.reservations.pageInfo && this.props.reservations.pageInfo.totalData}{' '}
+                Limit {this.props.reservations.pageInfo && this.props.reservations.pageInfo.perPage}
+              </Col>
+            </Row>
             <Modal isOpen={this.state.showModal}>
-              <ModalHeader>Delete route</ModalHeader>
-              <ModalBody>Are u sure want to delete route?</ModalBody>
+              <ModalHeader>Delete Reservation ?</ModalHeader>
+              <ModalBody>Are you sure want to delete this reservation?</ModalBody>
               <ModalFooter>
                 <Button color='success' onClick={this.deleteData}>
                   OK
@@ -220,6 +279,6 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = { getReserve }
+const mapDispatchToProps = { getReserve, deleteReservation }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reserve)

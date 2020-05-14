@@ -22,10 +22,10 @@ class Card extends Component {
   }
 
   async componentDidMount() {
-    this.props.getBusses()
-    this.props.getRoutes()
-    this.props.getBoard()
-    this.props.getAgents()
+    this.props.getBusses(1, 50, 'bus_name', '', 'bus_name', '')
+    this.props.getRoutes(1, 5, '', '', 'departure', '')
+    this.props.getBoard(1, 5, 'schedule', '', 'schedule', '')
+    this.props.getAgents(1, 5, 'name', '', 'name', '')
   }
 
   render() {
@@ -49,7 +49,7 @@ class Card extends Component {
         </Col>
         <Col md={3}>
           <CardData className='sizeCard schedule'>
-            <MdSchedule className='icon' /> {this.props.board.totalData} Schedules
+            <MdSchedule className='icon' /> {this.props.board ? this.props.board.totalData : ''} Schedules
           </CardData>
         </Col>
       </Row>

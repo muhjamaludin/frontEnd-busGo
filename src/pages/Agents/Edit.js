@@ -27,6 +27,7 @@ class EditAgent extends Component {
       isLoading: false,
       showModal: false,
       modalMessage: '',
+      start: false
     }
     this.submitData = async (e) => {
       e.preventDefault()
@@ -55,6 +56,15 @@ class EditAgent extends Component {
     const id = this.props.match.params.id
     this.props.getAgentById(id)
   }
+  componentDidUpdate() {
+    if (this.props.agents && !this.state.start) {
+      this.setState({
+        username: this.props.agents[0].username,
+        name: this.props.agents[0].name,
+        start: true
+      })
+    }
+  }
 
   render() {
     console.log('result', this.props.agents)
@@ -72,8 +82,7 @@ class EditAgent extends Component {
                     <Label>username</Label>
                     <Input
                       type='text'
-                      placeholder={this.props.agents[0].username}
-                      value={this.props.agents[0].username} 
+                      value={this.state.username} 
                       onChange={((e) => this.setState({username: e.target.value}))}
                     />
                   </FormGroup>
@@ -81,7 +90,6 @@ class EditAgent extends Component {
                     <Label>Agent Name</Label>
                     <Input
                       type='text'
-                      placeholder={this.props.agents[0].name}
                       value={this.state.name}
                       onChange={(e) => this.setState({name: e.target.value})}
                     />

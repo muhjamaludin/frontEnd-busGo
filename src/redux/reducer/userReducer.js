@@ -25,6 +25,18 @@ export default function Users(state = initialState, actions) {
         isLoading: false,
         users: actions.payload,
       }
+    case 'EDIT_ROLE':
+      return {
+        ...state,
+        isLoading: false,
+        users: actions.payload
+      }
+    case 'UPLOAD_PHOTO':
+      return {
+        ...state,
+        isLoading: false,
+        users: actions.payload
+      }
     case 'ADD_USER':
       return {
         ...state,

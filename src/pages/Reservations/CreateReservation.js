@@ -4,7 +4,8 @@ import {
   Row, Col, Input, Label,
   Button, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
-import {addReserve} from '../../redux/actions/reserveActions'
+import {addReserve, getSeatReservation} from '../../redux/actions/reserveActions'
+import {getBoardById} from '../../redux/actions/BoardActions'
 import {connect} from 'react-redux'
 import Sidebar from '../../components/Sidebar'
 
@@ -23,25 +24,42 @@ class CreateReservation extends Component{
     }
     this.submitData = async (e) => {
       e.preventDefault()
-      // this.setState({isLoading: true})
-      console.log(this.state)
+      const id = this.props.match.params.id
       const data = {
         idUser: this.state.idUser,
-        idPrice: this.state.idPrice,
-        idBoard: this.state.idBoard,
         seat: this.state.seat,
         status: this.state.status
       }
-      this.props.addReserve(data)
+      this.props.addReserve(id, data)
       this.props.history.push('/reserve')
     }
       this.dismissModal = () => {
         this.setState({showModal: false})
         this.props.history.push('/reserve')
       }
+      this.boardId = async (e) => {
+        this.setState({idBoard: e.target.value})
+        this.props.getBoardById(e.target.value)
+      }
   }
-    
+
+  componentDidMount() {
+    const id = this.props.match.params.id
+    this.props.getSeatReservation(id)
+    this.props.getBoardById(id)
+  }
+
+  buildOptions() {
+    var arr = []
+    for (let i = 1; i <= parseInt(this.props.board); i++) {
+        arr.push(<option key={i} value={i} >{i}</option>) 
+    }
+    return arr 
+  }
+
   render(){
+      console.log('seat', this.props.seat)
+      console.log('board', this.props.board)
     return(
         <>
           <Row>
@@ -58,33 +76,21 @@ class CreateReservation extends Component{
                     onChange={(e) => this.setState({idUser: e.target.value})} 
                   />
                 </FormGroup>
+          
                 <FormGroup>
-                  <Label>id Price</Label>
-                  <Input type='number' 
-                  placeholder={'id price'}
-                  value={this.state.idPrice} 
-                  onChange={(e) => this.setState({idPrice: e.target.value})} />
+                  <Label>Seat</Label> <br />                
+                  <select value={this.state.seat} onChange={(e) => this.setState({seat: e.target.value})} >
+                    {this.buildOptions()}
+                  </select>
                 </FormGroup>
                 <FormGroup>
-                  <Label>id Board</Label>
-                  <Input type='number' 
-                  placeholder={'id board'}
-                  value={this.state.idBoard} 
-                  onChange={(e) => this.setState({idBoard: e.target.value})} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Seat</Label>
-                  <Input type='number' 
-                  placeholder={'seat'}
-                  value={this.state.seat} 
-                  onChange={(e) => this.setState({seat: e.target.value})} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Status</Label>
-                  <Input type='text' 
-                  placeholder={'status'}
-                  value={this.state.status} 
-                  onChange={(e) => this.setState({status: e.target.value})} />
+                  <Label>Status</Label> <br />
+                  <select value={this.state.status} onChange={(e) => this.setState({status: e.target.value})} >
+                      <option value="Booked" > Booked </option>
+                      <option value="Booked" > Booked </option>
+                      <option value="Paid" > Paid </option>
+                      <option value="Boarding" >Boarding</option>
+                  </select>
                 </FormGroup>
                 <div>
                   <Button style={{float: "right"}} color='success'>Save</Button>
@@ -106,4 +112,11 @@ class CreateReservation extends Component{
   }
 }
 
-export default connect(null, {addReserve})(CreateReservation)
+const mapStateToProps = state => {
+  return {
+    seat: state.reserve.reservations.data,
+    board: state.board.boards.data[0].seat
+  }
+}
+
+export default connect(mapStateToProps, {addReserve, getSeatReservation, getBoardById})(CreateReservation)

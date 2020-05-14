@@ -1,12 +1,9 @@
 import React, { Component } from 'react'
-import config from '../../utils/config'
-import axios from 'axios'
 import { connect } from 'react-redux'
-import { getRoutes } from '../../redux/actions/routeActions'
+import { getRoutes,createRoutes, deleteRoutes } from '../../redux/actions/routeActions'
 
 import {
   Table,
-  Container,
   Button,
   Row,
   Col,
@@ -16,19 +13,25 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
+  ModalFooter, Collapse, Card, CardBody
 } from 'reactstrap'
 
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { MdDeleteForever, MdEdit } from 'react-icons/md'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaSort, FaCheck } from 'react-icons/fa'
 
 class Route extends Component {
   constructor(props) {
     super(props)
     this.state = {
       routes: [],
+      searchKey: 'departure',
+      sortKey: 'departure',
+      searchValue: '',
+      sortValue: '',
+      limit: 5,
+      page: 1,
       pageInfo: {
         page: 0,
         perPage: 0,
@@ -37,76 +40,60 @@ class Route extends Component {
         nextLink: null,
         prevLink: null,
       },
+      collapseOpen: false,
       currentPage: 1,
       sort: 0,
       showModal: false,
       selectedId: 0,
       startFrom: 1,
     }
-
+    this.limit = (e) => {
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('limit', this.state.limit)
+      this.props.getRoutes(page, limit, searchKey, searchValue, sortKey, sortValue)
+    }
     this.nextData = async () => {
-      const results = await axios.get(this.state.pageInfo.nextLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({
-        routes: data,
-        pageInfo,
-        startFrom: this.state.startFrom + pageInfo.perPage,
-      })
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('next', this.state.page)
+      this.props.getRoutes(page + 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
     this.prevData = async () => {
-      const results = await axios.get(this.state.pageInfo.prevLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({
-        routes: data,
-        pageInfo,
-        startFrom: this.state.startFrom - pageInfo.perPage,
-      })
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('next', this.state.page)
+      this.props.getRoutes(page - 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
     this.searchRoute = async (e) => {
-      const results = await axios.get(
-        config.APP_BACKEND.concat(`route?search[departure]=${e.target.value}`)
-      )
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ routes: data, pageInfo })
+      this.setState({searchValue: e.target.value})
+      const {page, limit, searchKey, sortKey, sortValue} = this.state
+      this.props.getRoutes(page, limit, searchKey, e.target.value, sortKey, sortValue)
     }
-    this.sortRoute = async () => {
-      this.setState({ sort: this.state.sort ? '' : 1 })
-      const results = await axios.get(
-        config.APP_BACKEND.concat(`route?sort[departure]=${this.state.sort}`)
-      )
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ routes: data, pageInfo })
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        this.props.getRoutes(this.state.page, this.state.limit, this.state.searchKey, this.state.searchValue, this.state.sortKey, this.state.sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        this.props.getRoutes(this.state.page, this.state.limit, this.state.searchKey, this.state.searchValue, this.state.sortKey, this.state.sortValue)
+      }
     }
     this.deleteData = async () => {
-      const results = await axios.delete(
-        config.APP_BACKEND.concat(`route/${this.state.selectedId}`)
-      )
-      if (results.data.success) {
-        console.log('test')
-        const newData = await axios.get(config.APP_BACKEND.concat('route'))
-        const { data } = newData.data
-        const { pageInfo } = newData.data
-        this.setState({
-          route: data,
-          pageInfo,
-          showModal: false,
-          selectedId: 0,
-        })
-      } else {
-        console.log(results.data)
-      }
+      const id = this.state.selectedId
+      this.props.deleteRoutes(id)
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.setState({showModal: false})
+      console.log('wow', page, limit, searchKey, searchValue, sortKey, sortValue)
+      this.props.getRoutes(page || 1, limit || 5, searchKey || '', searchValue || '', sortKey || '', sortValue || '')
     }
   }
   componentDidMount() {
-    this.props.getRoutes()
-    console.log(this.props.getRoutes)
+    const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+    this.props.getRoutes(page || 1, limit || 5, searchKey || '', searchValue || '', sortKey || '', sortValue || '')
   }
 
   render() {
+    console.log('this', this.props.pageInfo)
     return (
       <>
         <Row>
@@ -129,20 +116,30 @@ class Route extends Component {
                             />
                           </div>
                         </td>
+                        {/* <td>
+                        <Button color="primary" onClick={this.toggleCollapse} style={{ marginBottom: '1rem' }}>Toggle</Button>
+                          <Collapse isOpen={this.state.collapseOpen}>
+                          <label>Search By</label>
+                            <select onChange={(e) => this.setState({searchKey: e.target.value})} >
+                              <option value="departure">Departure</option>
+                              <option value="destination" >Destination</option>
+                            </select>
+                          </Collapse>
+                        </td> */}
                         <td>
-                            <label></label>
-                            <select>
-                              <option>search by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <label>Search By</label>
+                            <select onChange={(e) => this.setState({searchKey: e.target.value})} >
+                              <option value="departure">Departure</option>
+                              <option value="destination" >Destination</option>
                             </select>
                           </td>
                           <td>
-                            <select>
-                              <option>sort by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <label>Sort By</label>
+                            <select onChange={(e) => this.setState({sortKey: e.target.value})} >
+                              <option value="departure" > Departure</option>
+                              <option value="destination" >Destination</option>
                             </select>
+                            <FaSort color={'#053354'} size={23} onClick={this.sort} />
                           </td>
                         <td className='text-right'>
                           <Link to='/route/add'>
@@ -165,7 +162,7 @@ class Route extends Component {
               <thead className='thead-dark'>
                 <tr className='text-center'>
                   <th>No</th>
-                  <th onClick={this.sortRoute}>Departure</th>
+                  <th >Departure</th>
                   <th>Destination</th>
                   <th>Options</th>
                 </tr>
@@ -176,7 +173,7 @@ class Route extends Component {
                   this.props.routes &&
                   this.props.routes.map((data, i) => (
                     <tr className='text-center'>
-                      <td>{i + 1}</td>
+                      <td>{i + this.state.startFrom}</td>
                       <td>{data.departure}</td>
                       <td>{data.destination}</td>
                       <td>
@@ -203,7 +200,7 @@ class Route extends Component {
               </tbody>
             </Table>
             <Row>
-            <Col md={3} className='text-center'>
+            <Col md={2} className='text-center'>
                 <Button
                   disabled={
                     this.props.pageInfo && this.props.pageInfo.prevLink
@@ -216,7 +213,7 @@ class Route extends Component {
                   &#8249;
                 </Button>
               </Col>
-              <Col md={6} className='text-center'>
+              <Col md={5} className='text-center'>
                 <Button
                   disabled={
                     this.props.pageInfo && this.props.pageInfo.nextLink
@@ -229,6 +226,16 @@ class Route extends Component {
                   &#8250;
                 </Button>
               </Col>
+              <Col md={2}>
+                <label>Limit</label>
+                <select value={this.state.limit} onChange={(e) => this.setState({limit: e.target.value})}>
+                  <option value="5" onClick={this.limit} >5</option>
+                  <option value="10" onClick={this.limit} >10</option>
+                  <option value="25" onClick={this.limit} >25</option>
+                  <option value="50" onClick={this.limit} >50</option>
+                  <option value="100" onClick={this.limit} >100</option>
+                </select>
+              </Col>
               <Col md={3} className='text-right'>
                 Page {this.props.pageInfo && this.props.pageInfo.page}/
                 {this.props.pageInfo && this.props.pageInfo.totalPage} Total
@@ -238,7 +245,7 @@ class Route extends Component {
             </Row>
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete route</ModalHeader>
-              <ModalBody>Are u sure want to delete route?</ModalBody>
+              <ModalBody>Are you sure want to delete route?</ModalBody>
               <ModalFooter>
                 <Button color='success' onClick={this.deleteData}>
                   OK
@@ -263,9 +270,10 @@ class Route extends Component {
 const mapStateToProps = (state) => {
   return {
     routes: state.route.routes,
+    pageInfo: state.route.pageInfo
   }
 }
 
-const mapDispatchToProps = { getRoutes }
+const mapDispatchToProps = { getRoutes, createRoutes, deleteRoutes }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Route)

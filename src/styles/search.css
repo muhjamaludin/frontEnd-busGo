@@ -18,10 +18,17 @@
   border: none;
   outline: none;
   background: none;
-  margin-left: 25px;
+  margin-left: 15px;
   color: darkred;
 }
+.buttonBoard {
+  color: #18a4e1;
+}
 .buttonEdit {
+  border: none;
+  outline: none;
+  background: none;
+  margin-left: 25px;
   color: #053354;
 }
 

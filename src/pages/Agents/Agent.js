@@ -1,18 +1,14 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import config from '../../utils/config'
 import { connect } from 'react-redux'
-import { getAgents, deleteAgent, searchData, movePage } from '../../redux/actions/agentActions'
+import { getAgents, deleteAgent} from '../../redux/actions/agentActions'
 
 import {
   Table,
-  Container,
   Button,
   Row,
   Col,
   Form,
   FormGroup,
-  Label,
   Input,
   Modal,
   ModalHeader,
@@ -20,12 +16,11 @@ import {
   ModalFooter,
 } from 'reactstrap'
 
-import Pagination from '../../components/Pagination'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { FiEdit, FiSearch } from 'react-icons/fi'
 import { MdDeleteForever } from 'react-icons/md'
-import { FaEdit, FaSearch } from 'react-icons/fa'
+import { FaEdit, FaSort } from 'react-icons/fa'
 
 class Agent extends Component {
   constructor(props) {
@@ -40,6 +35,12 @@ class Agent extends Component {
         nextLink: null,
         prevLink: null,
       },
+      searchKey: 'name',
+      sortKey: 'username',
+      searchValue: '',
+      sortValue: '',
+      page: 1,
+      limit: 5,
       currentPage: 1,
       sort: 0,
       showModal: false,
@@ -47,74 +48,59 @@ class Agent extends Component {
       startFrom: 1,
       name: ''
     }
-
-    this.searchAgent = (e) => {
-      this.setState({
-        name: e.currentTarget.value
-      })
-      console.log(this.state.name)
-    }
-    this.Clicked = (e) => {
-      this.props.searchData(this.state.name)
-    }
-    this.onPageChange = data => {
-      const { currentPage, totalPage, pageLimit } = data
-      this.props.movePage(currentPage)
-      console.log(data)
+    this.limit = (e) => {
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('limit', this.state.limit)
+      this.props.getAgents(page, limit, searchKey, searchValue, sortKey, sortValue)
     }
 
     this.nextData = () => {
-      const data = this.props.agents
-      console.log(data)
-      const pageInfo = this.props.agents.pageInfo
-      console.log(pageInfo)
-      this.setState({
-        agents: data,
-        pageInfo,
-        startFrom: this.state.startFrom + pageInfo.perPage,
-      })
-      console.log(this.state.startFrom, this.state.agents)
+      console.log('ayam')
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('next', this.state.page)
+      this.props.getAgents(page + 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
-    this.prevData = async () => {
-      const results = this.props.agents.pageInfo.prevLink
-      const { data } = results
-      const { pageInfo } = results
-      this.setState({
-        agents: data,
-        pageInfo,
-        startFrom: this.state.startFrom - pageInfo.perPage,
-      })
+    this.prevData = () => {
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('next', this.state.page)
+      this.props.getAgents(page - 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
-    this.searchAgent = async e => {
-      this.props.getAgents(e.target.value)
-      // const { data } = results.data;
-      // const { pageInfo } = results.data;
-      // this.setState({ agents: data, pageInfo });
-    };
-    // this.sortAgent = async () => {
-    //   this.setState({ sort: this.state.sort ? '' : 1 });
-    //   const results = await axios.get(
-    //     config.APP_BACKEND.concat(`agents?sort[agent]=${this.state.sort}`)
-    //   );
-    //   const { data } = results.data;
-    //   const { pageInfo } = results.data;
-    //   this.setState({ agents: data, pageInfo });
-    // };
-    this.deleteData = async e => {
-      e.preventDefault()
+    this.searchAgent = async (e) => {
+      this.setState({searchValue: e.target.value})
+      const {page, limit, searchKey, sortKey, sortValue} = this.state
+      this.props.getAgents(page, limit, searchKey, e.target.value, sortKey || 'username', sortValue)
+    }
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        console.log('0', this.state.sortkey)
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getAgents(page, limit, searchKey, searchValue, sortKey, sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        console.log('this', this.state)
+        this.props.getAgents(page, limit, searchKey, searchValue, sortKey, sortValue)
+      }
+    }
+    this.deleteData = async () => {
       const id = this.state.selectedId
-      console.log('id', id)
-      await this.props.deleteAgent(id)
-      await this.props.getAgents()
+      this.props.deleteAgent(id)
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
       this.setState({showModal: false})
+      console.log('wow', page, limit, searchKey, searchValue, sortKey, sortValue)
+      this.props.getAgents(page || 1, limit || 5, searchKey || '', searchValue || '', sortKey || '', sortValue || '')
     }
   }
   componentDidMount() {
-    this.props.getAgents()
+    const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+    this.props.getAgents(page || 1, limit || 5, searchKey || '', searchValue || '', sortKey || 'name', sortValue || 1)
   }
 
   render() {
-    console.log('info', this.props.agents.pageInfo)
+    console.log('info', this.props.pageInfo)
     return (
       <>
         <Row>
@@ -123,7 +109,7 @@ class Agent extends Component {
           <Col md={9} className='mt-4'>
             <Row>
               <Col md={12}>
-                {this.props.agents && this.props.agents.agents.length !== 0 ? (
+                {/* {this.props.agents && this.props.agents.length !== 0 ? ( */}
                   <Form>
                     <FormGroup>
                       <table style={{width: '100%'}}>
@@ -139,19 +125,19 @@ class Agent extends Component {
                             </div>                    
                           </td>
                           <td>
-                            <label></label>
-                            <select>
-                              <option>search by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <label>Search By</label>
+                            <select onChange={(e) => this.setState({searchKey: e.target.value})}>
+                              <option value="username" >username</option>
+                              <option value="name" >agent</option>
                             </select>
                           </td>
                           <td>
-                            <select>
-                              <option>sort by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <label>Sort By</label>
+                            <select onChange={(e) => this.setState({sortKey: e.target.value})}>
+                              <option value="username" >username</option>
+                              <option value="name" >agent</option>
                             </select>
+                            <FaSort color={'#053354'} size={23} onClick={this.sort} />
                           </td>
                           <td className='text-right'>
                             <Link to='/agents/add'>
@@ -167,7 +153,7 @@ class Agent extends Component {
                       </table>
                     </FormGroup>
                   </Form>
-                ) : (<div>Data is not available</div>)}
+                {/* ) : (<div>Data is not available</div>)} */}
               </Col>
             </Row>
             <Table>
@@ -175,15 +161,15 @@ class Agent extends Component {
                 <tr className='text-center'>
                   <th>No</th>
                   <th>Username</th>
-                  <th onClick={this.sortAgent}>Agency Name</th>
+                  <th>Agency Name</th>
                   <th>Options</th>
                 </tr>
               </thead>
               <tbody>
-                {this.props.agents.agents && this.props.agents.agents.length && this.props.agents.agents &&
-                  this.props.agents.agents.map((v, i) => (
+                {this.props.agents && this.props.agents.length && this.props.agents &&
+                  this.props.agents.map((v, i) => (
                     <tr className='text-center'>
-                      <td>{1 + i}</td>
+                      <td>{this.state.startFrom + i}</td>
                       <td>{v.username}</td>
                       <td>{v.name}</td>
                       <td>
@@ -213,7 +199,7 @@ class Agent extends Component {
             <Col md={3} className='text-center' style={{height: '10%'}}>
                 <Button
                   disabled={
-                    this.props.agents && this.props.agents.pageInfo.prevLink ? false : true
+                    this.props.pageInfo && this.props.pageInfo.prevLink ? false : true
                   }
                   onClick={this.prevData}
                   className='previous'
@@ -221,32 +207,37 @@ class Agent extends Component {
                   &#8249;
                 </Button>
               </Col>
-              <Col md={6} className='text-center'>
-                <Button
+              <Col md={4} className='text-center'>
+              <Button
                   disabled={
-                    this.props.agents.pageInfo && this.props.agents.pageInfo.nextLink ? false : true
+                    this.props.pageInfo && this.props.pageInfo.nextLink
+                      ? false
+                      : true
                   }
                   onClick={this.nextData}
                   className='next'
                 >
                   &#8250;
                 </Button>
-              </Col> */}
-              {/* <Col md={3} className='text-right'>
+              </Col>
+              <Col md={2}>
+                <label>Limit</label>
+                <select value={this.state.limit} onChange={(e) => this.setState({limit: e.target.value})}>
+                  <option value="5" onClick={this.limit} >5</option>
+                  <option value="10" onClick={this.limit} >10</option>
+                  <option value="25" onClick={this.limit} >25</option>
+                  <option value="50" onClick={this.limit} >50</option>
+                  <option value="100" onClick={this.limit} >100</option>
+                </select>
+              </Col>
+              <Col md={3} className='text-right'>
                 Page {this.props.pageInfo && this.props.pageInfo.page}/
                 {this.props.pageInfo && this.props.pageInfo.totalPage}{' '} Total
-                Data {this.props.pageInfo && this.props.pageInfo.totalData}
+                Data {this.props.pageInfo && this.props.pageInfo.totalData} 
                 Limit {this.props.pageInfo && this.props.pageInfo.perPage}{' '}
               </Col>
             </Row>
-            <Row>
-              {/* <Col md={12} className='text-center'>
-                <Pagination totalRecords={this.props.pageInfo && this.props.pageInfo.totalData}
-                  pageLimit={this.props.pageInfo && this.props.pageInfo.perPage}
-                  pageNeighbours={0}
-                  onPageChanged={this.onPageChanged} />
-              </Col> */}
-            </Row>
+            
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete Agent</ModalHeader>
               <ModalBody>Are you sure want to delete this agent?</ModalBody>
@@ -273,7 +264,8 @@ class Agent extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    agents: state.agents
+    agents: state.agents.agents,
+    pageInfo: state.agents.pageInfo
   }
 }
 

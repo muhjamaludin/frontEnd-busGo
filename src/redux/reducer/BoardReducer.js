@@ -12,6 +12,29 @@ export default function Reserve(state = initialState, actions) {
               isLoading: false,
               boards: actions.payload
           }
+        case 'GET_BOARD_BY_ID':
+            return {
+                ...state,
+                isLoading: false,
+                boards: actions.payload
+            }
+        case 'ADD_BOARD':
+            return {
+                ...state,
+                isLoading: false,
+                boards: actions.payload
+            }
+        case 'EDIT_BOARD':
+            return {
+                ...state,
+                isLoading: false,
+                boards: actions.payload
+            }
+        case 'DELETE_BOARD':
+            return {
+                ...state,
+                isLoading: false,
+            }
       case 'EDIT_RESERVATION':
           return {
               ...state,

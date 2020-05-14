@@ -1,14 +1,9 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import config from '../../utils/config'
-import { addAgent } from '../../redux/actions/agentActions'
+import { addAgent, getAgents } from '../../redux/actions/agentActions'
 import { connect } from 'react-redux'
-
-import qs from 'qs'
 import Sidebar from '../../components/Sidebar'
 
 import {
-  Container,
   Form,
   FormGroup,
   Row,
@@ -35,26 +30,20 @@ class PostAgent extends Component {
     }
     this.submitData = async (e) => {
       e.preventDefault()
-      // this.setState({isLoading: true})
       console.log(this.state)
       this.props.addAgent(this.state.username, this.state.name)
       this.props.history.push('/agents')
+      this.props.getAgents(1, 5, 'name', '', 'name', '')
     }
     this.dismissModal = () => {
       this.setState({ showModal: false })
       this.props.history.push('/agents')
     }
   }
-  //   async componentDidMount(){
-  //     const results = await axios.get(config.APP_BACKEND.concat(`agents/add`))
-  //     const {data} = results.data
-  //     this.setState({id:this.props.match.params.id, data})
-  //     console.log(data)
-  //     this.changeData = (e, form) => {
-  //       const {data} = this.state
-  //       data[form] = e.target.value
-  //       this.setState({data})
-  //     }}
+
+  componentDidMount() {
+    
+  }
 
   render() {
     return (
@@ -83,10 +72,9 @@ class PostAgent extends Component {
                   <FormGroup>
                     <Label>Username</Label>
                     <Input
+                      type='text'
                       value={this.state.username}
-                      onChange={(e) =>
-                        this.setState({ username: e.target.value })
-                      }
+                      onChange={(e) => this.setState({ username: e.target.value })}
                     />
                   </FormGroup>
                   <FormGroup>
@@ -109,12 +97,12 @@ class PostAgent extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
-    addagents: state.agents.data,
+    agents: state.agents.agents
   }
 }
 
-const mapDispatchToProps = { addAgent }
+const mapDispatchToProps = { addAgent, getAgents }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PostAgent)

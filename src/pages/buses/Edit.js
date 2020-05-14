@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import config from '../../utils/config'
-
-import qs from 'qs'
-
+import Sidebar from '../../components/Sidebar'
+import {getBus, editBus} from '../../redux/actions/busActions'
+import {getAgents} from '../../redux/actions/agentActions'
+import {getSchedules} from '../../redux/actions/scheduleActions'
+import {getRoutes} from '../../redux/actions/routeActions'
+import {connect} from 'react-redux'
+import Config from '../../utils/config'
 import {
   Container,
   Form,
@@ -24,123 +28,142 @@ class EditBus extends Component {
     super(props)
     this.state = {
       id: 0,
-      data: {},
+      idAgent: '',
+      idRoute: '',
+      idSchedule: '',
+      picture: '',
+      busName: '',
+      classBus: '',
+      start: false,
       isLoading: false,
       showModal: false,
       modalMessage: '',
     }
-  }
-  async componentDidMount() {
-    const results = await axios.get(
-      config.APP_BACKEND.concat(`bus/${this.props.match.params.id}`)
-    )
-    const { data } = results.data
-    console.log(data)
-    this.setState({ id: this.props.match.params.id, data })
-    this.changeData = (e, form) => {
-      const { data } = this.state
-      data[form] = e.target.value
-      this.setState({ data })
-    }
     this.submitData = async (e) => {
       e.preventDefault()
       // this.setState({isLoading: true})
-      const submit = await axios.patch(
-        config.APP_BACKEND.concat(`bus/${this.props.match.params.id}`),
-        qs.stringify(this.state.data)
-      )
-      console.log(submit.data)
-      if (submit.data.success) {
-        this.setState({ isLoading: false })
-        this.props.history.push('/bus')
-      } else {
-        this.setState({ modalMessage: submit.data.msg })
-      }
+      let bodyFormData = new FormData()
+      bodyFormData.append('idAgent', this.state.idAgent)
+      bodyFormData.append('idBusRoute', this.state.idRoute)
+      bodyFormData.append('idBusSchedule', this.state.idSchedule)
+      bodyFormData.append('picture', this.state.picture)
+      bodyFormData.append('busName', this.state.busName)
+      bodyFormData.append('classBus', this.state.classBus)
+      const id = this.props.match.params.id
+      this.props.editBus(id, bodyFormData)
+      console.log('id', id,  this.state.idAgent, this.state.idRoute, this.state.idSchedule, bodyFormData)
+      this.props.history.push('/bus')
+    }
+    this.picture = (e) => {
+      this.setState({
+        picture: e.target.files[0]
+      })
     }
     this.dismissModal = () => {
       this.setState({ showModal: false })
       this.props.history.push('/bus')
     }
+  
   }
+  
+  componentDidMount() {
+    const id = this.props.match.params.id
+    this.props.getBus(id)
+    this.props.getAgents(1, 50, 'name', '', 'name', '')
+    this.props.getRoutes(1, 50, 'departure', '', 'departure', '')
+    this.props.getSchedules(1, 50, 'departure_time', '', 'departure_time', '')
+  }
+  
+  componentDidUpdate() {
+    if (this.props.bus && !this.state.start) {
+      this.setState({
+        picture: this.props.bus[0].picture,
+        idAgent: this.props.bus[0].id_agents,
+        idRoute: this.props.bus[0].id_bus_route,
+        idSchedule: this.props.bus[0].id_bus_schedule,
+        busName: this.props.bus[0].bus_name,
+        classBus: this.props.bus[0].class_bus,
+        start: true
+      })
+    }
+  }
+    
   render() {
-    const { id, isLoading } = this.state
-    const { picture, busName, busSeat, classBus, idRoute } = this.state.data
+    console.log('bus', this.props.bus)
+    console.log('name', this.state.busName, this.state.classBus)
     return (
-      <Container>
-        {isLoading && <>Loading...</>}
-        {
-          <>
-            <Modal isOpen={this.state.showModal}>
-              <ModalHeader>Alert</ModalHeader>
-              <ModalBody>{this.state.modalMessage}</ModalBody>
-              <ModalFooter>
-                <Button onClick={this.dismissModal}>Ok</Button>
-              </ModalFooter>
-            </Modal>
-          </>
-        }
-        {id && !isLoading && (
           <>
             <Row>
-              <Col md={12}>
+              <Sidebar />
+              <Col md={2} />
+              <Col md={8}>
                 <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
                   <h2 className='text-dark text-center font-weight-bold'>
                     Update Bus
-                  </h2>
-                  <FormGroup>
-                    <Label>Picture</Label>
-                    <Input
-                      type='file'
-                      placeholder={this.state.data[0].picture}
-                      value={picture}
-                      onChange={(e) => this.changeData(e, 'picture')}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Bus Name</Label>
-                    <Input
-                      type='text'
-                      placeholder={this.state.data[0].bus_name}
-                      value={busName}
-                      onChange={(e) => this.changeData(e, 'busName')}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Bus Seat</Label>
-                    <Input
-                      type='text'
-                      placeholder={this.state.data[0].bus_seat}
-                      value={busSeat}
-                      onChange={(e) => this.changeData(e, 'busSeat')}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Class Bus</Label>
-                    <Input
-                      type='text'
-                      placeholder={this.state.data[0].classBus}
-                      value={classBus}
-                      onChange={(e) => this.changeData(e, 'classBus')}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Code Route</Label>
-                    <Input
-                      type='text'
-                      placeholder={this.state.data[0].id_bus_route}
-                      value={idRoute}
-                      onChange={(e) => this.changeData(e, 'idRoute')}
-                    />
-                  </FormGroup>
+                  </h2> 
+                  <Row>
+                  <Col md={5}>
+                      <FormGroup>
+                      <Label>Picture</Label> <br />
+                      <img src={Config.APP_BACKEND.concat(`bus/${this.state.picture}`)} width={200} height={200} alt='this is for picture' />
+                      <Input type='file' onChange={this.picture} />
+                      </FormGroup>
+
                   <Button color='success'>Save</Button>
+                  </Col>
+                  <Col md={4}>
+                      <FormGroup>
+                    <Label>Agent</Label>
+                        <select className='form-control' value={this.state.idAgent} onChange={(e) => this.setState({idAgent: e.target.value})} >
+                      {this.props.agent.length && this.props.agent.map((data, i) => (
+                          <option value={data.id}>{data.name}</option>
+                      ))}
+                      </select>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label >Route</Label>
+                      <select className='form-control' value={this.state.idRoute} onChange={(e) => this.setState({idRoute: e.target.value})} >
+                        {this.props.routes && this.props.routes.map((data, i) => (
+                            <option value={data.id}>{data.departure} - {data.destination}</option>
+                        ))}
+                      </select>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label >Schedule</Label>
+                      <select className='form-control' value={this.state.idSchedule} onChange={(e) => this.setState({idSchedule: e.target.value})} >
+                        {this.props.schedules && this.props.schedules.map((data, i) => (
+                            <option value={data.id}>{data.departure_time} - {data.arrive_time}</option>
+                        ))}
+                      </select>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label>Bus Name</Label>
+                      <Input type='text' value={this.state.busName} onChange={(e) => this.setState({busName: e.target.value})} />
+                    </FormGroup>
+                    <FormGroup>
+                      <div>
+                      <Label>Class Bus</Label>
+                      </div>
+                      <Input type='text' value={this.state.classBus} onChange={(e) => this.setState({classBus: e.target.value})} />
+                    </FormGroup>
+                  </Col>
+                  
+                </Row>
                 </Form>
               </Col>
             </Row>
           </>
-        )}
-      </Container>
     )
   }
 }
 
-export default EditBus
+const mapStateToProps = state => {
+  return {
+    agent: state.agents.agents,
+    routes: state.route.routes,
+    schedules: state.schedule.schedules,
+    bus: state.bus.busses
+  }
+}
+
+export default connect(mapStateToProps, {getBus, getAgents, getRoutes, getSchedules, editBus})(EditBus)

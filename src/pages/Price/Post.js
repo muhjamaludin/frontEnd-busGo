@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
 import axios from 'axios'
 import config from '../../utils/config'
-
-import qs from 'qs'
-
+import {addPrice} from '../../redux/actions/priceActions'
+import {connect} from 'react-redux'
 import {
   Container, Form, FormGroup,
   Row, Col, Input, Label,
@@ -16,12 +15,11 @@ class PostPrice extends Component{
   constructor(props){
     super(props)
     this.state = {
-      routes: [],
-      schedules: [],
-      buses: [],
+      idPrice: '',
       idRoute: '',
       idBus: '',
       idSchedule: '',
+      price: '',
       isLoading: false,
       showModal: false,
       modalMessage: ''
@@ -29,22 +27,19 @@ class PostPrice extends Component{
 
     this.submitData = async (e)=>{
         e.preventDefault()
-        // this.setState({isLoading: true})
-        const submit = await axios.patch(config.APP_BACKEND.concat(`transaction/${this.props.match.params.id}`),qs.stringify(this.state.data))
-        console.log(submit.data)
-        if(submit.data.success){
-          this.setState({isLoading: false})
-          this.props.history.push('/transaction')
-        }else{
-          this.setState({modalMessage: submit.data.msg})
+        const data = {
+          idBus: this.state.idBus,
+          price: this.state.price
         }
-      }
+        this.props.addPrice(data)
+        this.props.history.push('/price')
+    }
     
 
 
     this.dismissModal = () => {
       this.setState({showModal: false})
-      this.props.history.push('/transaction')
+      this.props.history.push('/price')
     }
   }
     async componentDidMount () {
@@ -69,33 +64,17 @@ class PostPrice extends Component{
           
           <Row>
           <Sidebar />
-            <Col md={10}>
+            <Col md={3} />
+            <Col md={5}>
               <Form className='mt-2' onSubmit={(e) => this.submitData(e)}>
                 <h2 className='text-dark text-center font-weight-bold'>New Price</h2>
                 <FormGroup>
-                  <Label>Bus Name</Label>
-                  {console.log(this.state.buses.pageInfo)}
-                  {/* <select>
-                      {this.state.buses && this.state.buses.map((data, i) => (
-                        console.log(data.data)
-                      ))}
-                  </select> */}
+                  <Label className='numberInput'>id Bus</Label>
+                  <Input type='number' value={this.state.idBus} onChange={((e) => this.setState({idBus: e.target.value}))} />
                 </FormGroup>
                 <FormGroup>
-                  <Label className='numberInput'>Bus Seat</Label>
-                  <Input type='number' value={this.state.busSeat} onChange={((e) => this.setState({busSeat: e.target.value}))} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Class Bus</Label>
-                  <Input type='text' value={this.state.classBus} onChange={(e) => this.setState({classBus: e.target.value})} />
-                </FormGroup>
-                <FormGroup>
-                  <Label >Route</Label>
-                  {/* <select className='form-control' >
-                    {this.state.routes && this.state.routes.map((data, i) => (
-                        <option value={data.id}>{data.departure}</option>
-                    ))}
-                  </select> */}
+                  <Label>Price</Label>
+                  <Input type='text' value={this.state.price} onChange={(e) => this.setState({price: e.target.value})} />
                 </FormGroup>
                 <Button type='submit' color='success'>Save</Button>
               </Form>
@@ -108,4 +87,4 @@ class PostPrice extends Component{
   }
 }
 
-export default PostPrice
+export default connect(null, {addPrice})(PostPrice)

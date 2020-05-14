@@ -7,7 +7,7 @@ import priceReducer from './priceReducer'
 import userReducer from './userReducer'
 import reserveReducer from './reserveReducer'
 import boardReducer from './BoardReducer'
-// import authReducer from './authReducer'
+import authReducer from './AuthReducer'
 
 const rootReducer = combineReducers({
   agents: agentReducer,
@@ -17,8 +17,8 @@ const rootReducer = combineReducers({
   price: priceReducer,
   user: userReducer,
   reserve: reserveReducer,
-  board: boardReducer
-  // auth: authReducer
+  board: boardReducer,
+  auth: authReducer
 })
 
 export default rootReducer

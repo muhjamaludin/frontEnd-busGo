@@ -5,9 +5,10 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(
   'token'
 )}`
 
-export const getAgents = () => async (dispatch) => {
+export const getAgents = (page, limit, searchKey, searchValue, sortKey, sortValue) => async (dispatch) => {
+  console.log('ayew', page, limit, searchKey, searchValue, sortKey, sortValue)
   try {
-    const res = await axios.get(Config.APP_BACKEND.concat('agents'))
+    const res = await axios.get(Config.APP_BACKEND.concat(`agents/?page=${page}&limit=${limit}&search[${searchKey}]=${searchValue}&sort[${sortKey}]=${sortValue}`))
     dispatch({
       type: 'GET_AGENTS',
       payload: res.data
@@ -81,9 +82,12 @@ export const deleteAgent = (id) => async (dispatch) => {
     )
     dispatch({
       type: 'DELETE_AGENT',
-      payload: res.data,
     })
-    console.log('respon delete', res)
+    if (res.data.success) {
+      alert('Delete Success')
+    } else {
+      alert('Edit Failed')
+    }
   } catch (error) {
     console.log(error)
   }

@@ -6,8 +6,10 @@ import '../styles/Navbar.css'
 
 import history from '../utils/history'
 import Loading from '../components/Loading'
+import {setLogout} from '../redux/actions/AuthActions'
+import {connect} from 'react-redux'
 
-export default class Navbar extends Component {
+class Navbar extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -15,13 +17,15 @@ export default class Navbar extends Component {
     }
     this.onLogout = () => {
       this.setState({ isLoading: true }, () => {
-        setTimeout(() => {
+        // setTimeout(() => {
           this.setState({ isLoading: false }, () => {
             localStorage.removeItem('token')
             this.props.check()
+            this.props.setLogout()
             history.push('/login')
+
           })
-        }, 1000)
+        // }, 1000)
       })
     }
   }
@@ -67,3 +71,5 @@ export default class Navbar extends Component {
     )
   }
 }
+
+export default connect(null, {setLogout})(Navbar)

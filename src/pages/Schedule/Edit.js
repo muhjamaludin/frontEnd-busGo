@@ -18,13 +18,13 @@ class EditSchedule extends Component{
       id: 0,
       timeGo: '',
       arrive: '',
+      start: false,
       isLoading: false,
       showModal: false,
       modalMessage: ''
     }
     this.submitData = async (e)=>{
       e.preventDefault()
-      // this.setState({isLoading: true})
       const data = {
         departure: this.state.timeGo,
         arrive: this.state.arrive
@@ -32,25 +32,29 @@ class EditSchedule extends Component{
       const id = this.props.match.params.id
       this.props.editSchedule(id, data)
       console.log('masa', id, data)
-      // if (submit) {
-      //   this.setState({isLoading: false})
-      //   this.props.history.push('/schedule')
-      // }else{
-      //   this.props.history.push('/schedule')
-      //   this.setState({modalMessage: submit.data.msg})
-      // }
+      this.props.history.push('/schedule')
     }
   }
-  async componentDidMount(){
+  componentDidMount(){
     const id = this.props.match.params.id
     this.props.getScheduleById(id)
-    
+  
     this.dismissModal = () => {
       this.setState({showModal: false})
       this.props.history.push('/schedule')
     }
   }
+  componentDidUpdate() {
+    if (this.props.schedule && !this.state.start) {
+      this.setState({
+        timeGo: this.props.schedule.data[0].departure_time,
+        arrive: this.props.schedule.data[0].arrive_time,
+        start: true
+      })
+    }
+  }
   render(){
+    console.log(this.props.schedule)
     return(
         <>
           <Row>
@@ -58,12 +62,11 @@ class EditSchedule extends Component{
             <Col md={3} />
             <Col md={5}>
               <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
-                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
+                <h2 className='text-dark text-center font-weight-bold'>Update Time</h2>
                 <FormGroup>
                   <Label>Time Go</Label>
                   <Input 
                     type='time' 
-                    placeholder={this.props.schedule.departure_time} 
                     value={this.state.timeGo} 
                     onChange={(e) => this.setState({timeGo: e.target.value})} />
                 </FormGroup>
@@ -71,7 +74,6 @@ class EditSchedule extends Component{
                   <Label>Arrive</Label>
                   <Input 
                     type='time' 
-                    placeholder={this.props.schedule.arrive_time} 
                     value={this.state.arrive} 
                     onChange={(e) => this.setState({arrive: e.target.value})} />
                 </FormGroup>
@@ -95,7 +97,7 @@ class EditSchedule extends Component{
 
 const mapStateToProps = state => {
   return {
-    schedule: state
+    schedule: state.schedule.schedules
   }
 }
 

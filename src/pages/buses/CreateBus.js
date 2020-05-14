@@ -44,7 +44,6 @@ class CreateBus extends Component{
       console.log('isi state', this.state.idAgent, this.state.idRoute, this.state.idSchedule, this.state.busName, this.state.classBus)
       console.log('amerika', bodyFormData)
       this.props.addBus(bodyFormData)
-      // this.setState({isLoading: false})
       this.props.history.push('/bus')
     }
 
@@ -54,7 +53,9 @@ class CreateBus extends Component{
     }
   }
     async componentDidMount () {
-      this.props.getAgents()
+      this.props.getAgents(1, 50, 'name', '', 'name', '')
+      this.props.getRoutes(1, 50, 'departure', '', 'departure', '')
+      this.props.getSchedules(1, 50, 'departure_time', '', 'departure_time', '')
   }
 
   render(){
@@ -109,10 +110,10 @@ class CreateBus extends Component{
                   <Label>Bus Name</Label>
                   <Input type='text' value={this.state.busName} onChange={(e) => this.setState({busName: e.target.value})} />
                 </FormGroup>
-                <FormGroup>
-                  <Label>Class Bus</Label>
-                  <Input type='text' value={this.state.classBus} onChange={(e) => this.setState({classBus: e.target.value})} />
-                </FormGroup>
+                  <FormGroup>
+                    <Label>Class Bus</Label>
+                    <Input type='text' value={this.state.classBus} onChange={(e) => this.setState({classBus: e.target.value})} />
+                  </FormGroup>
                 
                 <Button type='submit' style={{float: 'right'}} color='success'>Save</Button>
               </Form>

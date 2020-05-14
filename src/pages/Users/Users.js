@@ -2,20 +2,18 @@ import React, { Component } from 'react'
 import config from '../../utils/config'
 import axios from 'axios'
 import Sidebar from '../../components/Sidebar'
-import {getUsers} from '../../redux/actions/userActions'
+import {getUsers, deleteUser} from '../../redux/actions/userActions'
 import {connect} from 'react-redux'
 import Config from '../../utils/config'
 
 import {
-  Table, Container, Button,
+  Table, Button,
   Row, Col, Form, FormGroup,
-  Label, Input, Modal, ModalHeader, ModalBody, ModalFooter
+  Input, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
 import { MdDeleteForever } from 'react-icons/md'
-import { FaEdit, FaEye } from 'react-icons/fa'
+import { FaEdit, FaEye, FaSort } from 'react-icons/fa'
 import '../../styles/search.css'
-import {Profile} from './UserDetail'
-import {BusDetail} from '../buses/BusDetail'
 
 import { Link } from 'react-router-dom'
 
@@ -40,6 +38,12 @@ class Users extends Component {
         nextLink: null,
         prevLink: null
       },
+      page: 1,
+      limit: 5,
+      searchKey: 'username',
+      sortKey: 'username',
+      searchValue: '',
+      sortValue: 0,
       currentPage: 1,
       sort: 0,
       Profile: '',
@@ -47,50 +51,47 @@ class Users extends Component {
       selectedId: 0,
       startFrom: 1
     }
-    this.Profile = async () => {
-
+    this.limit = (e) => {
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('limit', this.state.limit)
+      this.props.getUsers(page, limit, searchKey, searchValue, sortKey, sortValue)
     }
 
-    this.nextData = async () => {
-      const results = await axios.get(this.state.pageInfo.nextLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ users: data, pageInfo, startFrom: this.state.startFrom + pageInfo.perPage })
+    this.nextData = () => {
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getUsers(page + 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
-    this.prevData = async () => {
-      const results = await axios.get(this.state.pageInfo.prevLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ users: data, pageInfo, startFrom: this.state.startFrom - pageInfo.perPage })
+    this.prevData = () => {
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getUsers(page - 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
     this.searchUser = async (e) => {
-      const results = await axios.get(config.APP_BACKEND.concat(`users?search[username]=${e.target.value}`))
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ users: data, pageInfo })
+      this.setState({searchValue: e.target.value})
+      const {page, limit, searchKey, sortKey, sortValue} = this.state
+      this.props.getUsers(page, limit, searchKey, e.target.value, sortKey || 'username', sortValue)
     }
-    this.sortUser = async () => {
-      this.setState({ sort: (this.state.sort ? '' : 1) })
-      const results = await axios.get(config.APP_BACKEND.concat(`users?sort[username]=${this.state.sort}`))
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ users: data, pageInfo })
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getUsers(page, limit, searchKey, searchValue, sortKey, sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getUsers(page, limit, searchKey, searchValue, sortKey, sortValue)
+      }
     }
     this.deleteData = async () => {
-      const results = await axios.delete(config.APP_BACKEND.concat(`users/${this.state.selectedId}`))
-      if (results.data.success) {
-        console.log('test')
-        const newData = await axios.get(config.APP_BACKEND.concat('users'))
-        const { data } = newData.data
-        const { pageInfo } = newData.data
-        this.setState({ users: data, pageInfo, showModal: false, selectedId: 0 })
-      } else {
-        console.log(results.data)
-      }
+      const id = this.state.selectedId
+      this.props.deleteUser(id)
+      this.props.getUsers(1, 5, this.state.searchKey || 'price', this.state.searchValue || '', this.state.sortKey || 'price', this.state.sortValue || '')
+      this.setState({showModal: false})
     }
   }
   async componentDidMount() {
-    this.props.getUsers()
+    this.props.getUsers(1, 5, this.state.searchKey || 'price', this.state.searchValue || '', this.state.sortKey || 'price', this.state.sortValue || 0)
   }
 
   render() {
@@ -100,9 +101,9 @@ class Users extends Component {
           <Sidebar />
           <Col md={1}></Col>
           <Col md={9} className="mt-4" >
-            <Form style={{ width: '70%' }}>
+            <Form>
               <FormGroup>
-                <table style={{ width: '100%' }}>
+                <table>
                   <tr>
                     <td>
                       <div className='searchbar'>
@@ -111,19 +112,20 @@ class Users extends Component {
                       </div>
                     </td>
                     <td>
-                            <select>
-                              <option>search by</option>
-                              <option>username</option>
-                              <option>agent</option>
-                            </select>
-                          </td>
-                          <td>
-                            <select>
-                              <option>sort by</option>
-                              <option>username</option>
-                              <option>agent</option>
-                            </select>
-                          </td>
+                      <select onChange={(e)=>this.setState({searchKey: e.target.value})} >
+                        <option>Username</option>
+                        <option>Fullname</option>
+                        <option>Phone</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select onChange={(e)=> this.setState({sortKey: e.target.value})}>
+                        <option>Username</option>
+                        <option>Fullname</option>
+                        <option>Phone</option>
+                      </select>
+                      <FaSort color={'#053354'} size={23} onClick={this.sort} />
+                    </td>
                   </tr>
                 </table>
               </FormGroup>
@@ -143,11 +145,11 @@ class Users extends Component {
           <tbody>
             {this.props.user.length && this.props.user.map((v, i) => (
               <tr key={this.props.user[i].id.toString()}>
-                <td>{1 + i}</td>
+                <td>{this.state.startFrom + i}</td>
                 <td>{this.props.user[i].username}</td>
                 <td>{this.props.user[i].fullname}</td>
                 <td>{this.props.user[i].identity}</td>
-                <td> {this.props.user[i].phone} </td>
+                <td> 0{this.props.user[i].phone} </td>
                 <td> {this.props.user[i].role_id} </td>
                 <td>
                   {/* <Link style={{ marginRight: '40px', color: 'black' }} to={`/user/userdetail/${this.props.user[i].id}`}> */}
@@ -160,11 +162,12 @@ class Users extends Component {
                         identity: this.props.user[i].identity,
                         gender: this.props.user[i].gender,
                         phone: this.props.user[i].phone,
+                        email: this.props.user[i].email,
                         address: this.props.user[i].address,
                         balance: this.props.user[i].balance,
                         })} />
                   {/* </Link> */}
-                  <Link to={`/user/edit/${this.props.user[i].id}`}>
+                  <Link to={`/users/userdetail/${this.props.user[i].id}`}>
                     <FaEdit color={'blue'} />
                   </Link>
                   <Button className='buttonDelete' onClick={() => this.setState({ showModal: true, selectedId: this.props.user[i].id })}>
@@ -175,17 +178,27 @@ class Users extends Component {
             ))}
           </tbody>
         </Table>
-        {/* <Row>
-        <Col md={3} className='text-center'>
+        <Row>
+        <Col md={2} className='text-center'>
             <Button disabled={this.props.page.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
           </Col>
-          <Col md={6} className='text-center'>
+          <Col md={5} className='text-center'>
             <Button disabled={this.props.page.nextLink ? false : true} onClick={this.nextData} className='next'>&#8250;</Button>
           </Col>
+          <Col md={2}>
+                <label>Limit</label>
+                <select value={this.state.limit} onChange={(e) => this.setState({limit: e.target.value})}>
+                  <option value="5" onClick={this.limit} >5</option>
+                  <option value="10" onClick={this.limit} >10</option>
+                  <option value="25" onClick={this.limit} >25</option>
+                  <option value="50" onClick={this.limit} >50</option>
+                  <option value="100" onClick={this.limit} >100</option>
+                </select>
+              </Col>
           <Col md={3} className='text-right'>
             Page {this.props.page.page}/{this.props.page.totalPage} Total Data {this.props.page.totalData} Limit {this.props.page.perPage}
           </Col>
-        </Row> */}
+        </Row>
         <Modal className='modal-lg' isOpen={this.state.Profile}>
           <ModalHeader>Profile</ModalHeader>
           <ModalBody>
@@ -223,6 +236,10 @@ class Users extends Component {
                       <Col md={6}> {this.state.phone} </Col>
                     </Row>
                     <Row>
+                      <Col md={4}>Email:</Col>
+                      <Col md={6}> {this.state.email} </Col>
+                    </Row>
+                    <Row>
                       <Col md={4}>Address:</Col>
                       <Col md={6}> {this.state.address} </Col>
                     </Row>
@@ -241,7 +258,7 @@ class Users extends Component {
         </Modal>
         <Modal isOpen={this.state.showModal}>
           <ModalHeader>Delete User</ModalHeader>
-          <ModalBody>Are u sure want to delete user?</ModalBody>
+          <ModalBody>Are you sure want to delete user?</ModalBody>
           <ModalFooter>
             <Button color='success' onClick={this.deleteData}>OK</Button>
             <Button color='danger' onClick={() => this.setState({ showModal: false, selectedId: 0 })}>Cancel</Button>
@@ -261,4 +278,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, {getUsers})(Users)
+export default connect(mapStateToProps, {getUsers, deleteUser})(Users)

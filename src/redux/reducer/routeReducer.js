@@ -1,6 +1,5 @@
 const initialState = {
   routes: [],
-  route: [],
   pageInfo: {},
   isLoading: false,
 }
@@ -14,11 +13,11 @@ export default function Routes(state = initialState, actions) {
         routes: actions.payload.data,
         pageInfo: actions.payload.pageInfo
       }
-    case 'GET_ROUTE':
+    case 'GET_ROUTE_BY_ID':
       return {
         ...state,
         isLoading: false,
-        route: actions.payload,
+        routes: actions.payload,
       }
     case 'EDIT_ROUTE':
       return {

@@ -5,9 +5,9 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(
   'token'
 )}`
 
-export const getBusses = () => async (dispatch) => {
+export const getBusses = (page, limit, searchKey, searchValue, sortKey, sortValue) => async (dispatch) => {
   try {
-    const res = await axios.get(Config.APP_BACKEND.concat('bus'))
+    const res = await axios.get(Config.APP_BACKEND.concat(`bus/?page=${page}&limit=${limit}&search[${searchKey}]=${searchValue}&sort[${sortKey}]=${sortValue}`))
     dispatch({
       type: 'GET_BUSES',
       payload: {
@@ -34,14 +34,12 @@ export const getBus = (id) => async (dispatch) => {
   }
 }
 
-export const editBus = (id, data) => async (dispatch) => {
+export const editBus = (id, bodyFormData) => async (dispatch) => {
   try {
-    const res = await axios.patch(
-      Config.APP_BACKEND.concat(`bus/${id}`),
-      qs.stringify(data)
-    )
+    const res = await axios.patch(Config.APP_BACKEND.concat(`bus/${id}`), bodyFormData)
     if (res) {
       alert('Edit Success')
+      this.props.history.push('/bus')
     } else {
       alert('Edit Failed')
     }

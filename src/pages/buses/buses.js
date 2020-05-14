@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
 import config from '../../utils/config'
-import {getBusses} from '../../redux/actions/busActions'
+import {getBusses, deleteBus} from '../../redux/actions/busActions'
 import Config from '../../utils/config'
 
 import {
@@ -18,11 +18,11 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter, Dropdown, DropdownToggle, DropdownMenu, DropdownItem 
 } from 'reactstrap'
 import { FiEdit, FiSearch } from 'react-icons/fi'
 import { MdDeleteForever } from 'react-icons/md'
-import {FaEye} from 'react-icons/fa'
+import {FaEye, FaSort} from 'react-icons/fa'
 
 import { Link } from 'react-router-dom'
 import '../../styles/search.css'
@@ -50,75 +50,64 @@ class Bus extends Component {
       destination: '',
       timeGo: '',
       arrive: '',
+      page: 1,
+      limit: 5,
+      searchKey: 'bus_name',
+      sortKey: 'bus_name',
+      searchValue: '',
+      sortValue: 0,
       currentPage: 1,
-      sort: 0,
+      sort: 1,
       showModal: false,
       selectedId: 0,
-      startFrom: 1
+      startFrom: 1,
+      dropDownOpen: false
+    }
+    this.toggle = (e) => {
+      this.setState({dropDownOpen: !this.state.dropDownOpen})
+    } 
+    this.limit = (e) => {
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      console.log('limit', this.state.limit)
+      this.props.getBusses(page, limit, searchKey, searchValue, sortKey, sortValue)
     }
 
-    this.nextData = async () => {
-      const results = await axios.get(this.state.pageInfo.nextLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      console.log(data)
-      console.log(pageInfo)
-      this.setState({
-        buses: data,
-        pageInfo,
-        startFrom: this.state.startFrom + pageInfo.perPage
-      })
-      console.log(this.state)
+    this.nextData = () => {
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getBusses(page + 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
-    this.prevData = async () => {
-      const results = await axios.get(this.state.pageInfo.prevLink)
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({
-        buses: data,
-        pageInfo,
-        startFrom: this.state.startFrom - pageInfo.perPage
-      })
+    this.prevData = () => {
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getBusses(page - 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
-    this.searchBus = async e => {
-      const results = await axios.get(
-        config.APP_BACKEND.concat(`bus?search[bus_name]=${e.target.value}`)
-      )
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ buses: data, pageInfo })
+    this.searchBus = async (e) => {
+      this.setState({searchValue: e.target.value})
+      const {page, limit, searchKey, sortKey, sortValue} = this.state
+      this.props.getBusses(page, limit, searchKey, e.target.value, sortKey || 'username', sortValue)
     }
-    this.sortBus = async () => {
-      this.setState({ sort: this.state.sort ? '' : 1 })
-      const results = await axios.get(
-        config.APP_BACKEND.concat(`bus?sort[bus_name]=${this.state.sort}`)
-      )
-      const { data } = results.data
-      const { pageInfo } = results.data
-      this.setState({ buses: data, pageInfo })
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getBusses(page, limit, searchKey, searchValue, sortKey, sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getBusses(page, limit, searchKey, searchValue, sortKey, sortValue)
+      }
     }
     this.deleteData = async () => {
-      const results = await axios.delete(
-        config.APP_BACKEND.concat(`bus/${this.state.selectedId}`)
-      )
-      if (results.data.success) {
-        const newData = await axios.get(config.APP_BACKEND.concat('bus'))
-        const { data } = newData.data
-        const { pageInfo } = newData.data
-        this.setState({
-          buses: data,
-          pageInfo,
-          showModal: false,
-          selectedId: 0
-        })
-      } else {
-        console.log(results.data)
-      }
+      const id = this.state.selectedId
+      this.props.deleteBus(id)
+      this.props.getBusses(1, 5, this.state.searchKey || 'bus_name', this.state.searchValue || '', this.state.sortKey || 'bus_name', this.state.sortValue || '')
+      this.setState({showModal: false})
     }
   }
 
   async componentDidMount() {
-    this.props.getBusses()
+    this.props.getBusses(1, 5, this.state.searchKey || 'bus_name', this.state.searchValue || '', this.state.sortKey || 'bus_name', this.state.sortValue || 0)
   }
 
   render() {
@@ -146,18 +135,23 @@ class Bus extends Component {
                         </td>
                         <td>
                             <label></label>
-                            <select>
-                              <option>search by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <select onChange={(e) => this.setState({searchKey: e.target.value})}>
+                              <option value="bus_name" selected>Bus Name</option>
+                              <option value="class_bus" >Class Bus</option>
+                              <option value="departure" >Departure</option>
+                              <option value="destination" >Destination</option>
+                              <option value="name" >Agent</option>
                             </select>
                           </td>
                           <td>
-                            <select>
-                              <option>sort by</option>
-                              <option>username</option>
-                              <option>agent</option>
+                            <select onChange={(e) => this.setState({sortKey: e.target.value})} >
+                              <option value="bus_name" >Bus Name</option>
+                              <option value="class_bus" >Bus Class</option>
+                              <option value="departure" >Departure</option>
+                              <option value="destination" >Destination</option>
+                              <option value="name" >Agent</option>
                             </select>
+                            <FaSort color={'#053354'} size={23} onClick={this.sort} />
                           </td>
                         <td className='text-right'>
                           <Link to='/bus/add'>
@@ -181,7 +175,7 @@ class Bus extends Component {
                 <tr>
                   <th>No</th>
                   <th onClick={this.sortBus}>Bus Name</th>
-                  <th>Class Bus</th>
+                  <th>Bus Class</th>
                   <th>Departure</th>
                   <th>Destination</th>
                   <th>Agency</th>
@@ -192,7 +186,7 @@ class Bus extends Component {
                 {this.props.bus.busses.length &&
                   this.props.bus.busses.map((v, i) => (
                     <tr key={this.props.bus.busses[i].created_at}>
-                      <td>{1 + i}</td>
+                      <td>{this.state.startFrom + i}</td>
                       <td>{this.props.bus.busses[i].bus_name}</td>
                       <td>{this.props.bus.busses[i].class_bus}</td>
                       <td>{this.props.bus.busses[i].departure}</td>
@@ -235,23 +229,33 @@ class Bus extends Component {
               </tbody>
             </Table>
             <Row>
-            <Col md={3} className='text-center'>
+            <Col md={2} className='text-center'>
                 <Button
-                  disabled={this.state.pageInfo.prevLink ? false : true}
+                  disabled={this.props.bus.pageInfo.prevLink ? false : true}
                   onClick={this.prevData}
                   className='previous'
                 >
                   &#8249;
                 </Button>
               </Col>
-              <Col md={6} className='text-center'>
+              <Col md={5} className='text-center'>
                 <Button
-                  disabled={this.state.pageInfo.nextLink ? false : true}
+                  disabled={this.props.bus.pageInfo.nextLink ? false : true}
                   onClick={this.nextData}
                   className='next'
                 >
                   &#8250;
                 </Button>
+              </Col>
+              <Col md={2}>
+                <label>Limit</label>
+                <select value={this.state.limit} onChange={(e) => this.setState({limit: e.target.value})}>
+                  <option value="5" onClick={this.limit} >5</option>
+                  <option value="10" onClick={this.limit} >10</option>
+                  <option value="25" onClick={this.limit} >25</option>
+                  <option value="50" onClick={this.limit} >50</option>
+                  <option value="100" onClick={this.limit} >100</option>
+                </select>
               </Col>
               <Col md={3} className='text-right '>
                 Page {this.props.bus.pageInfo.page}/{this.props.bus.pageInfo.totalPage}{' '}
@@ -261,7 +265,7 @@ class Bus extends Component {
             </Row>
             <Modal isOpen={this.state.showModal}>
               <ModalHeader>Delete Bus</ModalHeader>
-              <ModalBody>Are u sure want to delete bus?</ModalBody>
+              <ModalBody>Are you sure want to delete bus?</ModalBody>
               <ModalFooter>
                 <Button color='success' onClick={this.deleteData}>
                   OK
@@ -341,4 +345,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, {getBusses})(Bus)
+export default connect(mapStateToProps, {getBusses, deleteBus})(Bus)

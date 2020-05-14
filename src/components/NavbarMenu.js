@@ -14,15 +14,15 @@ export default class Navbar extends Component {
       isLoading: false,
     }
     this.onLogout = () => {
-      this.setState({ isLoading: true }, () => {
-        setTimeout(() => {
-          this.setState({ isLoading: false }, () => {
-            localStorage.removeItem('token')
-            this.props.check()
-            history.push('/login')
-          })
-        }, 1000)
-      })
+      // this.setState({ isLoading: true }, () => {
+      //   setTimeout(() => {
+      //     this.setState({ isLoading: false }, () => {
+      //       localStorage.removeItem('token')
+      //       this.props.check()
+      //       history.push('/login')
+      //     })
+      //   }, 1000)
+      // })
     }
   }
 
@@ -47,7 +47,7 @@ export default class Navbar extends Component {
               <MdNotifications style={{ color: '#f5d400' }} />
               <sup>5</sup>
             </span> */}
-            {this.props.isLogin && (
+            {/* {this.props.isLogin && (
               <abbr title='Logout'>
                 <FiLogOut
                   onClick={this.onLogout}
@@ -59,7 +59,7 @@ export default class Navbar extends Component {
                   }}
                 />
               </abbr>
-            )}
+            )} */}
           </Col>
         </Row>
         {this.state.isLoading && <Loading />}

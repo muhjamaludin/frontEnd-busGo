@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { getBoard } from '../../redux/actions/BoardActions'
+import { getBoard, deleteBoard } from '../../redux/actions/BoardActions'
 
 import {
   Table,
@@ -18,8 +18,8 @@ import {
 
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
-import { MdDeleteForever, MdEdit } from 'react-icons/md'
-import { FaEdit } from 'react-icons/fa'
+import { MdDeleteForever, MdAddBox } from 'react-icons/md'
+import { FaEdit, FaSort } from 'react-icons/fa'
 import AddButton from '../../components/Button'
 
 class Reserve extends Component {
@@ -29,10 +29,11 @@ class Reserve extends Component {
       routes: [],
       value: '',
       page: 1,
-      searchKey: '',
+      searchKey: 'schedule',
       searchValue: '',
-      sortKey: '',
-      sortValue: '',
+      sortKey: 'schedule',
+      sortValue: 0,
+      limit: 5,
       pageInfo: {
         page: 0,
         perPage: 0,
@@ -47,40 +48,65 @@ class Reserve extends Component {
       selectedId: 0,
       startFrom: 1,
     }
-
+    this.limit = (e) => {
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getBoard(page, limit, searchKey, searchValue, sortKey, sortValue)
+    }
     this.nextData = () => {
-      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.pageInfo.perPage })
-      const data = {
-        page: this.state.page,
-      }
-      console.log('data', data)
-      this.props.getBoard(data)
+      this.setState({page: this.state.page + 1, startFrom: this.state.startFrom + this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getBoard(page + 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
     this.prevData = () => {
-      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.pageInfo.perPage})
-      const data = {
-        page: this.state.page
-      }
-      this.props.getBoard(data)
+      this.setState({page: this.state.page - 1, startFrom: this.state.startFrom - this.state.limit})
+      const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+      this.props.getBoard(page - 1, limit, searchKey, searchValue, sortKey, sortValue)
     }
-    this.sortData = (e) => {
-      this.setState({sortValue: 1 ? 0 : 1})
-      this.props.getBoard(this.state.sortKey, this.state.sortValue)
-      console.log('sort', this.sortKey)
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getBoard(page, limit, searchKey, searchValue, sortKey, sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getBoard(page, limit, searchKey, searchValue, sortKey, sortValue)
+      }
     }
     this.searchData = (e) => {
       this.setState({searchValue: e.target.value})
-      this.props.getBoard(this.state.searchKey, this.state.searchValue)
+      this.props.getBoard(this.state.searchKey, this.state.searchValue, this.state.sortKey, this.state.sortValue)
       console.log('data', this.state.searchKey, this.state.searchValue)
+    }
+    this.sort = async () => {
+      if (this.state.sortValue === 1) {
+        this.setState({sortValue: 0})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getBoard(page, limit, searchKey, searchValue, sortKey, sortValue)
+      } else {
+        this.setState({sortValue: 1})
+        const {page, limit, searchKey, searchValue, sortKey, sortValue} = this.state
+        this.props.getBoard(page, limit, searchKey, searchValue, sortKey, sortValue)
+      }
+    }
+    this.deleteData = (e) => {
+      e.preventDefault()
+      const id = this.state.selectedId
+      this.props.deleteBoard(id)
+      this.props.getBoard(this.state.searchKey, this.state.searchValue, this.state.sortKey, this.state.sortValue)
+      this.setState({showModal: false})
     }
   }
 
   componentDidMount() {
-    this.props.getBoard()
+    this.props.getBoard(1, 3, this.state.searchKey, this.state.searchValue, this.state.sortKey || 'schedule', this.state.sortValue)
+  }
+  componentDidUpdate() {
+    console.log('did update', this.props.board)
   }
 
   render() {
-    console.log('board', this.props.board.data)
+    console.log('board', this.props.board)
     return (
       <>
         <Row>
@@ -120,7 +146,7 @@ class Reserve extends Component {
                         </td>
                         <td>
                           <label>sort by</label>
-                          <select onChange={(e) => this.setState({sortKey: e.target.value})} onClick={this.sortData} >
+                          <select onChange={(e) => this.setState({sortKey: e.target.value})}>
                             <option value="name">Agent</option>
                             <option value="bus_name">Bus Name</option>
                             <option value="class_bus">Class Bus</option>
@@ -130,8 +156,9 @@ class Reserve extends Component {
                             <option value="arrive_time">Arrive</option>
                             <option value="price">Price</option>
                             <option value="seat">Seat</option>
-                            <option value="schedule">Schedule</option>
+                            <option value="schedule" selected>Schedule</option>
                           </select>
+                          <FaSort color={'#053354'} size={23} onClick={this.sort} />
                         </td>
                         <td className='text-right'>
                           <Link to='/reserve/board/add'>
@@ -177,8 +204,16 @@ class Reserve extends Component {
                       <td>{data.schedule.slice(0, 10)}</td>
                       <td>
                         <Link
+                          className='buttonBoard'
+                          to={`/reserve/add/${data.id}`}
+                        >
+                          <span className='d-inline-block' title='Add Reservation'>
+                          <MdAddBox />
+                          </span>
+                        </Link>
+                        <Link
                           className='buttonEdit'
-                          to={`/route/${this.props.board.data[i].id}`}
+                          to={`/reserve/board/${data.id}`}
                         >
                           <FaEdit />
                         </Link>
@@ -187,7 +222,7 @@ class Reserve extends Component {
                           onClick={() =>
                             this.setState({
                               showModal: true,
-                              selectedId: this.board.reservations.data[i].id,
+                              selectedId: data.id,
                             })
                           }
                         >
@@ -199,7 +234,7 @@ class Reserve extends Component {
               </tbody>
             </Table>
             <Row>
-            <Col md={3} className='text-center'>
+            <Col md={2} className='text-center'>
                 <Button
                   disabled={
                     this.props.board.pageInfo && this.props.board.pageInfo.prevLink
@@ -212,7 +247,7 @@ class Reserve extends Component {
                   &#8249;
                 </Button>
               </Col>
-              <Col md={6} className='text-center'>
+              <Col md={5} className='text-center'>
                 <Button
                   disabled={
                     this.props.board.pageInfo && this.props.board.pageInfo.nextLink
@@ -225,6 +260,17 @@ class Reserve extends Component {
                   &#8250;
                 </Button>
               </Col>
+              <Col md={2}>
+                <label>Limit</label>
+                <select value={this.state.limit} onChange={(e) => this.setState({limit: e.target.value})}>
+                  <option value="4" onClick={this.limit} >4</option>
+                  <option value="5" onClick={this.limit} >5</option>
+                  <option value="10" onClick={this.limit} >10</option>
+                  <option value="25" onClick={this.limit} >25</option>
+                  <option value="50" onClick={this.limit} >50</option>
+                  <option value="100" onClick={this.limit} >100</option>
+                </select>
+              </Col>
               <Col md={3} className='text-right'>
                 Page {this.props.board.pageInfo && this.props.board.pageInfo.page}/
                 {this.props.board.pageInfo && this.props.board.pageInfo.totalPage} Total
@@ -233,8 +279,8 @@ class Reserve extends Component {
               </Col>
             </Row>
             <Modal isOpen={this.state.showModal}>
-              <ModalHeader>Delete route</ModalHeader>
-              <ModalBody>Are u sure want to delete route?</ModalBody>
+              <ModalHeader>Delete Schedule ?</ModalHeader>
+              <ModalBody>Are you sure want to delete this schedule?</ModalBody>
               <ModalFooter>
                 <Button color='success' onClick={this.deleteData}>
                   OK
@@ -263,6 +309,6 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = { getBoard }
+const mapDispatchToProps = { getBoard, deleteBoard }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reserve)

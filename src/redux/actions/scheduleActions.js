@@ -4,9 +4,9 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(
   'token'
 )}`
 
-export const getSchedules = () => async (dispatch) => {
+export const getSchedules = (page, limit, searchKey, searchValue, sortKey, sortValue) => async (dispatch) => {
   try {
-    const res = await axios.get(Config.APP_BACKEND.concat('schedule'))
+    const res = await axios.get(Config.APP_BACKEND.concat(`schedule/?page=${page}&limit=${limit}&search[${searchKey}]=${searchValue}&sort[${sortKey}]=${sortValue}`))
     dispatch({
       type: 'GET_SCHEDULES',
       payload: res.data,
@@ -47,6 +47,18 @@ export const addSchedules = (data) => async (dispatch) => {
     const res = await axios.post(Config.APP_BACKEND.concat('schedule/add'), data)
     dispatch({
       type: 'ADD_SCHEDULE',
+      payload: res.data
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const deleteSchedules = id => async dispatch => {
+  try {
+    const res = await axios.delete(Config.APP_BACKEND.concat(`schedule/${id}`))
+    dispatch({
+      type: 'DELETE_SCHEDULE',
       payload: res.data
     })
   } catch (error) {

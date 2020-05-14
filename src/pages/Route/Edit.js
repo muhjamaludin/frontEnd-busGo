@@ -16,6 +16,7 @@ class EditRoute extends Component{
       id: 0,
       departure: '',
       destination: '',
+      start: false,
       isLoading: false,
       showModal: false,
       modalMessage: '',
@@ -29,29 +30,37 @@ class EditRoute extends Component{
       }
       const id = this.props.match.params.id
       this.props.editRoutes(id, data)
-      console.log('masa', id, data)
         this.props.history.push('/route')
     }
   }
   componentDidMount(){
     const id = this.props.match.params.id
     this.props.getRoutesById(id)
+   
+  }
+  componentDidUpdate() {
+    if (this.props.route && !this.state.start) {
+      this.setState({
+        departure: this.props.route[0].departure,
+        destination: this.props.route[0].destination,
+        start: true
+      })
     }
+  }
   render(){
-    console.log('ini', this.props)
+    console.log('ini', this.props.route)
     return(
         <>
           <Row>
             <Sidebar />
-            <Col md={3} />
-            <Col md={5}>
+            <Col md={4} />
+            <Col md={3}>
               <Form className='mt-2' onSubmit={e=>this.submitData(e)}>
-                <h2 className='text-dark text-center font-weight-bold'>Update Schedule</h2>
+                <h2 className='text-dark text-center font-weight-bold'>Update Route</h2>
                 <FormGroup>
                   <Label>Departure</Label>
                   <Input 
-                    type='text' 
-                    // placeholder={this.props.route.data[0].departure} 
+                    type='text'
                     value={this.state.departure} 
                     onChange={(e) => this.setState({departure: e.target.value})} />
                 </FormGroup>
@@ -59,7 +68,6 @@ class EditRoute extends Component{
                   <Label>Destination</Label>
                   <Input 
                     type='text' 
-                    // placeholder={this.props.route.data[0].destination} 
                     value={this.state.destination} 
                     onChange={(e) => this.setState({destination: e.target.value})} />
                 </FormGroup>
@@ -83,7 +91,7 @@ class EditRoute extends Component{
 
 const mapStateToProps = state => {
   return {
-    route: state.route.routes
+    route: state.route.routes.data
   }
 }
 

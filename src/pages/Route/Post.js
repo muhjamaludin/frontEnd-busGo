@@ -20,18 +20,16 @@ class CreateRoute extends Component{
     }
     this.submitData = async (e) => {
       e.preventDefault()
-      // this.setState({isLoading: true})
-      console.log(this.state)
       const data = {
         departure: this.state.from,
         destination: this.state.to
       }
       this.props.createRoutes(data)
-      this.props.history.push('/schedule')
+      this.props.history.push('/route')
     }
       this.dismissModal = () => {
         this.setState({showModal: false})
-        this.props.history.push('/schedule')
+        this.props.history.push('/route')
       }
   }
     
