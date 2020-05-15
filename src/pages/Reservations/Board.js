@@ -189,7 +189,7 @@ class Reserve extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.board.data.length && this.props.board.data.map((data, i) => (
+                {this.props.board && this.props.board.data && this.props.board.data.length && this.props.board.data.map((data, i) => (
                     <tr className='text-center'>
                       <td>{this.state.startFrom + i}</td>
                       <td>{data.agent}</td>
