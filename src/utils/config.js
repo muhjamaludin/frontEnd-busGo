@@ -1,5 +1,5 @@
 const config = {
-    APP_BACKEND: 'http://localhost:8080/'
+    APP_BACKEND: 'http://34.203.219.100:8080/'
   }
   
   export default config
