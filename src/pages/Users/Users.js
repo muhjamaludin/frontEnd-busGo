@@ -143,7 +143,7 @@ class Users extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.user.length && this.props.user.map((v, i) => (
+            {this.props.user && this.props.user.data && this.props.user.length && this.props.user.map((v, i) => (
               <tr key={this.props.user[i].id.toString()}>
                 <td>{this.state.startFrom + i}</td>
                 <td>{this.props.user[i].username}</td>
@@ -180,10 +180,10 @@ class Users extends Component {
         </Table>
         <Row>
         <Col md={2} className='text-center'>
-            <Button disabled={this.props.page.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
+            <Button disabled={this.props.page && this.props.page.prevLink ? false : true} onClick={this.prevData} className='previous'>&#8249;</Button>
           </Col>
           <Col md={5} className='text-center'>
-            <Button disabled={this.props.page.nextLink ? false : true} onClick={this.nextData} className='next'>&#8250;</Button>
+            <Button disabled={this.props.page && this.props.page.nextLink ? false : true} onClick={this.nextData} className='next'>&#8250;</Button>
           </Col>
           <Col md={2}>
                 <label>Limit</label>
@@ -196,7 +196,8 @@ class Users extends Component {
                 </select>
               </Col>
           <Col md={3} className='text-right'>
-            Page {this.props.page.page}/{this.props.page.totalPage} Total Data {this.props.page.totalData} Limit {this.props.page.perPage}
+            Page {this.props.page && this.props.page.page}/{this.props.page && this.props.page.totalPage} 
+            Total Data {this.props.page && this.props.page.totalData} Limit {this.props.page && this.props.page.perPage}
           </Col>
         </Row>
         <Modal className='modal-lg' isOpen={this.state.Profile}>
